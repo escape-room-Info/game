@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESCAPE://SYSTEM - Singleplayer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <a href="index.html" class="back-link">← Back to Menu</a>
+            <h2 id="room-title">ROOM 01: INITIAL ACCESS</h2>
+        </header>
+
+        <div class="game-content">
+            <div class="status-bar">
+                <div id="timer-display" class="timer">TIME: 00:00</div>
+                <div id="score-display" class="score">SCORE: 0</div>
+            </div>
+
+            <div id="progress-bar" class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+            <div class="question-area">
+                <p id="question-text" class="question-text"></p>
+                <div id="options-container" class="options-container"></div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="result-screen hidden">
+            <div class="result-content">
+                <h2 id="result-title"></h2>
+                <p id="result-message"></p>
+                <div class="result-stats">
+                    <p>Final Score: <span id="final-score"></span></p>
+                    <p>Time Remaining: <span id="final-time"></span></p>
+                </div>
+                <div class="result-buttons">
+                    <button id="restart-btn" class="btn-primary">TRY AGAIN</button>
+                    <a href="index.html" class="btn-secondary">MAIN MENU</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
