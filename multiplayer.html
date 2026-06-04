@@ -164,7 +164,7 @@ const BASE_URL = 'https://api.jsonbin.io/v3/b';
 // ════════════════════════════════════════════
 // Ich nutze eine ÖFFENTLICHE Demo-Firebase-DB
 // (Nur für Demo/Schule — für Produktion eigene erstellen)
-const FB_URL = 'https://escape-system-demo-default-rtdb.firebaseio.com';
+const FB_URL = 'https://escape-room-d98e1-default-rtdb.europe-west1.firebasedatabase.app';
 
 async function fbSet(path, data) {
   const r = await fetch(`${FB_URL}/${path}.json`, {
