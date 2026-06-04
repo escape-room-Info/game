@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESCAPE://SYSTEM</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07090f;--bg2:#0c1220;--bg3:#111b2e;
+  --border:#1e3a5f;--border2:#1a4f80;
+  --accent:#00c8ff;--accent2:#00ff9d;--accent3:#ff4466;
+  --amber:#ffaa00;
+  --text:#b8d4ee;--text-dim:#4a6a88;--text-muted:#1e3a55;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,200,255,.012) 3px,rgba(0,200,255,.012) 4px);pointer-events:none;z-index:9998}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:50px 50px;opacity:.15;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 40%,black 100%)}
+
+/* === SCREEN SYSTEM === */
+.screen{display:none}
+.screen.active{display:block}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes throb{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes glow-pulse{0%,100%{text-shadow:0 0 40px rgba(0,200,255,.5)}50%{text-shadow:0 0 80px rgba(0,200,255,.9),0 0 120px rgba(0,200,255,.4)}}
+
+/* === MENU === */
+#s-menu{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.menu-inner{text-align:center;padding:2rem;position:relative;z-index:1;animation:fadeUp .5s ease}
+.logo-sub{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.3em;color:var(--text-dim);margin-bottom:1.5rem;text-transform:uppercase}
+.big-title{font-family:'Orbitron',monospace;font-size:clamp(2.6rem,9vw,5.5rem);font-weight:900;line-height:.92;color:#fff;animation:glow-pulse 3s ease infinite;margin-bottom:.5rem}
+.big-title .slash{color:var(--accent)}
+.tagline{font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--text-dim);letter-spacing:.12em;margin-bottom:3rem}
+.menu-cards{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+
+.mode-card{
+  width:260px;background:var(--bg2);border:1.5px solid var(--border2);
+  padding:2rem 1.5rem;cursor:pointer;transition:all .22s;position:relative;
+  overflow:hidden;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
+  text-align:center;user-select:none;
+}
+.mode-card:hover{border-color:var(--accent);box-shadow:0 0 40px rgba(0,200,255,.22);transform:translateY(-4px)}
+.mode-card.green:hover{border-color:var(--accent2);box-shadow:0 0 40px rgba(0,255,157,.2)}
+.mode-icon{font-size:2.2rem;margin-bottom:1rem;display:block}
+.mode-title{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.5rem;letter-spacing:.06em}
+.mode-desc{font-size:.84rem;color:var(--text-dim);line-height:1.5;margin-bottom:.75rem}
+.mode-badge{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:.63rem;letter-spacing:.1em;padding:.2rem .6rem;border-radius:2px}
+.badge-b{background:rgba(0,200,255,.1);color:var(--accent);border:1px solid rgba(0,200,255,.25)}
+.badge-g{background:rgba(0,255,157,.09);color:var(--accent2);border:1px solid rgba(0,255,157,.2)}
+
+/* === BUTTONS === */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  font-family:'Orbitron',monospace;font-size:.78rem;font-weight:700;
+  letter-spacing:.1em;padding:.85rem 2rem;border:1.5px solid var(--accent);
+  background:transparent;color:var(--accent);cursor:pointer;transition:all .2s;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+}
+.btn:hover{background:rgba(0,200,255,.1);box-shadow:0 0 28px rgba(0,200,255,.28);color:#fff;transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn.g{border-color:var(--accent2);color:var(--accent2)}
+.btn.g:hover{background:rgba(0,255,157,.09);box-shadow:0 0 28px rgba(0,255,157,.28)}
+.btn.r{border-color:var(--accent3);color:var(--accent3)}
+.btn.r:hover{background:rgba(255,68,102,.09);box-shadow:0 0 28px rgba(255,68,102,.28)}
+.btn.lg{font-size:.88rem;padding:1.1rem 2.8rem}
+.btn.sm{font-size:.68rem;padding:.55rem 1.2rem}
+.btn-row{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+
+/* === LAYOUT === */
+.wrap{max-width:740px;margin:0 auto;padding:1.5rem}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.page-logo{font-family:'Orbitron',monospace;font-size:.85rem;color:var(--accent);letter-spacing:.1em}
+.back-btn{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text-dim);background:none;border:none;cursor:pointer;letter-spacing:.08em;transition:color .2s;padding:.4rem .6rem}
+.back-btn:hover{color:var(--accent)}
+
+/* === HUD === */
+.hud{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.hud-item{font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--text-dim)}
+.hud-val{color:var(--accent2);font-weight:700}
+.prog-wrap{height:4px;background:var(--border);border-radius:2px;margin-bottom:1.8rem;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .5s ease;box-shadow:0 0 8px rgba(0,200,255,.5)}
+
+/* === ROOM INTRO === */
+.room-card{text-align:center;padding:4rem 2rem;animation:fadeUp .5s ease}
+.room-num-label{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--text-dim);letter-spacing:.25em;margin-bottom:1rem}
+.room-name-h{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,5vw,3rem);font-weight:900;color:var(--accent);text-shadow:0 0 50px rgba(0,200,255,.4);margin-bottom:.75rem}
+.room-desc-p{font-size:.9rem;color:var(--text-dim);max-width:380px;margin:0 auto 2.5rem}
+
+/* === QUESTION === */
+.q-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.q-tag{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.12em}
+.timer-pill{font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;padding:.3rem .9rem;border:1.5px solid var(--accent2);color:var(--accent2);background:rgba(0,255,157,.06);min-width:52px;text-align:center;transition:all .3s;border-radius:3px}
+.timer-pill.warn{border-color:var(--amber);color:var(--amber);background:rgba(255,170,0,.06);animation:throb 1s ease infinite}
+.timer-pill.dng{border-color:var(--accent3);color:var(--accent3);background:rgba(255,68,102,.08)}
+
+.q-box{font-size:1.12rem;line-height:1.65;color:#fff;padding:1.4rem 1.4rem 1.4rem 1.8rem;background:var(--bg2);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;margin-bottom:1.4rem;white-space:pre-line}
+
+/* === OPTIONS === */
+.options-grid{display:grid;gap:.7rem}
+.opt{
+  display:flex;align-items:center;gap:1rem;width:100%;
+  padding:.95rem 1.2rem;background:var(--bg2);border:1.5px solid var(--border2);
+  color:var(--text);font-family:'Exo 2',sans-serif;font-size:.98rem;
+  text-align:left;cursor:pointer;transition:all .16s;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+}
+.opt:hover:not([disabled]){border-color:var(--accent);background:rgba(0,200,255,.07);color:#fff;transform:translateX(4px)}
+.opt-ltr{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text-dim);min-width:1.3rem;font-weight:700}
+.opt.correct{border-color:var(--accent2)!important;background:rgba(0,255,157,.09)!important;color:var(--accent2)!important}
+.opt.correct .opt-ltr{color:var(--accent2)}
+.opt.wrong{border-color:var(--accent3)!important;background:rgba(255,68,102,.07)!important;color:var(--accent3)!important}
+.opt.wrong .opt-ltr{color:var(--accent3)}
+.opt[disabled]{cursor:default}
+
+.expl-box{display:none;margin-top:1.1rem;padding:.9rem 1.2rem;background:var(--bg2);border-left:3px solid var(--accent2);font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--accent2);line-height:1.6;border-radius:0 4px 4px 0;animation:fadeUp .3s ease}
+.expl-box.show{display:block}
+.next-row{margin-top:1.4rem;display:none;justify-content:flex-end}
+.next-row.show{display:flex}
+
+/* === RESULT === */
+.result-wrap{text-align:center;padding:3rem 1rem;animation:fadeUp .5s ease}
+.res-title{font-family:'Orbitron',monospace;font-size:clamp(2rem,6vw,3.5rem);font-weight:900;margin-bottom:.3rem}
+.res-title.ok{color:var(--accent2);text-shadow:0 0 50px rgba(0,255,157,.5)}
+.res-title.fail{color:var(--accent3);text-shadow:0 0 50px rgba(255,68,102,.5)}
+.res-sub{font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--text-dim);margin-bottom:2rem;letter-spacing:.1em}
+.stat-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border2);padding:1.2rem 1.8rem;min-width:108px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.stat-lbl{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--text-dim);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem}
+.stat-val{font-family:'Orbitron',monospace;font-size:1.75rem;font-weight:700;color:var(--accent)}
+
+/* === MP LOBBY / SCREENS === */
+.center-wrap{max-width:660px;margin:0 auto;padding:2rem 1.5rem;text-align:center}
+.mp-title{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:.4rem;letter-spacing:.05em}
+.mp-sub{font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--text-dim);margin-bottom:2rem;letter-spacing:.1em}
+
+.code-display{display:inline-block;background:var(--bg2);border:2px solid var(--accent);padding:1.4rem 3rem;margin:1.2rem auto}
+.code-label{font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--text-dim);letter-spacing:.2em;margin-bottom:.4rem}
+.code-big{font-family:'Orbitron',monospace;font-size:3.5rem;font-weight:900;color:var(--accent);letter-spacing:.3em;text-shadow:0 0 30px rgba(0,200,255,.45)}
+
+.player-chips{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin:1.2rem 0;min-height:50px;align-items:center}
+.chip{display:flex;align-items:center;gap:.45rem;background:var(--bg2);border:1px solid var(--border2);padding:.5rem 1rem;font-family:'Share Tech Mono',monospace;font-size:.8rem;color:#fff;border-radius:3px;animation:fadeUp .3s ease}
+.chip-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 6px var(--accent2);flex-shrink:0}
+.p-count{font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--text-dim);margin-bottom:1.2rem}
+
+.txt-input{width:100%;background:var(--bg2);border:1.5px solid var(--border2);color:#fff;font-family:'Exo 2',sans-serif;font-size:1rem;padding:.8rem 1rem;outline:none;margin-bottom:.8rem;transition:border-color .2s;border-radius:3px}
+.txt-input:focus{border-color:var(--accent2)}
+.code-input{font-family:'Orbitron',monospace;font-size:2rem;font-weight:700;letter-spacing:.3em;text-align:center}
+.code-input:focus{border-color:var(--accent)}
+.err-msg{color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:.78rem;margin-top:.8rem;display:none}
+
+/* === MP GAME HUD === */
+.mp-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.8rem;padding:1rem 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.mp-pscore{background:var(--bg3);border:1px solid var(--border);padding:.7rem 1rem;text-align:center;border-radius:4px;transition:border-color .3s,box-shadow .3s}
+.mp-pscore.active{border-color:var(--accent);box-shadow:0 0 18px rgba(0,200,255,.18)}
+.mp-pname{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);letter-spacing:.1em;margin-bottom:.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp-pts{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;color:var(--accent2)}
+.mp-center-hud{text-align:center}
+.mp-timer{font-family:'Orbitron',monospace;font-size:2.2rem;font-weight:900;color:var(--accent);transition:color .3s}
+.mp-timer.warn{color:var(--amber)}
+.mp-timer.dng{color:var(--accent3);animation:throb .8s ease infinite}
+.mp-qtag{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);letter-spacing:.12em;margin-top:.1rem}
+.mp-qa{padding:1.4rem 1.5rem}
+
+/* === KAHOOT BUTTONS === */
+.k-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:1.3rem}
+.kbtn{
+  display:flex;align-items:center;gap:.7rem;padding:1.15rem 1.1rem;
+  border:none;cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.97rem;
+  font-weight:600;color:#fff;transition:all .15s;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+}
+.kbtn:hover:not([disabled]){filter:brightness(1.15);transform:scale(1.02)}
+.kbtn:active:not([disabled]){transform:scale(.97)}
+.kbtn[disabled]{cursor:default}
+.k-ico{font-size:1.1rem;min-width:1.4rem}
+.k1{background:#c0392b}.k2{background:#1a5fa8}.k3{background:#b8770a}.k4{background:#1a7a2e}
+.kbtn.reveal-ok{filter:brightness(1.4);box-shadow:0 0 22px rgba(255,255,255,.25);animation:fadeUp .3s ease}
+.kbtn.reveal-no{opacity:.35;filter:grayscale(.4)}
+
+/* === MP RESULT === */
+.mp-result{text-align:center;padding:2.5rem 1rem;animation:fadeUp .5s ease}
+.crown{font-size:2.8rem;margin-bottom:.3rem}
+.winner-lbl{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.2em;margin-bottom:.3rem}
+.winner-n{font-family:'Orbitron',monospace;font-size:clamp(1.6rem,5vw,2.6rem);font-weight:900;color:var(--accent2);text-shadow:0 0 40px rgba(0,255,157,.4);margin-bottom:1.8rem}
+.score-table{display:flex;flex-direction:column;gap:.45rem;max-width:360px;margin:0 auto 2rem;text-align:left}
+.score-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.1rem;background:var(--bg2);border:1px solid var(--border2);border-radius:2px}
+.score-row.first{border-color:var(--accent2)}
+.score-pos{font-family:'Orbitron',monospace;font-size:.78rem;color:var(--text-dim);min-width:28px}
+.score-name{font-size:.93rem;color:#fff;font-weight:600}
+.score-pts{font-family:'Orbitron',monospace;font-size:1.05rem;color:var(--accent);font-weight:700}
+
+.spin{width:36px;height:36px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+.wait-txt{font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--text-dim);letter-spacing:.1em}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- ██ MENU ██ -->
+<div id="s-menu" class="screen active">
+  <div class="menu-inner">
+    <div class="logo-sub">Informatik · 7. Schulstufe · Escape Room</div>
+    <div class="big-title">ESCAPE<span class="slash">://</span><br>SYSTEM</div>
+    <div class="tagline">&gt; Kannst du das System hacken? _</div>
+    <div class="menu-cards">
+      <div class="mode-card" id="btn-sp">
+        <span class="mode-icon">🔒</span>
+        <div class="mode-title">SINGLEPLAYER</div>
+        <div class="mode-desc">Löse 10 Rätsel alleine. 3 Leben. Schlage die Uhr.</div>
+        <span class="mode-badge badge-b">10 FRAGEN · 3 RÄUME</span>
+      </div>
+      <div class="mode-card green" id="btn-mp">
+        <span class="mode-icon">⚡</span>
+        <div class="mode-title">MULTIPLAYER</div>
+        <div class="mode-desc">Kahoot-Style! Code teilen, mit Freunden spielen.</div>
+        <span class="mode-badge badge-g">BIS 8 SPIELER · 5 MIN</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ██ SINGLEPLAYER ██ -->
+<div id="s-sp" class="screen">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="page-logo">ESCAPE://SYSTEM</div>
+      <button class="back-btn" id="sp-back">◄ Menü</button>
+    </div>
+    <!-- Room Intro -->
+    <div id="sp-intro" style="display:none">
+      <div class="room-card">
+        <div class="room-num-label" id="sp-r-num">RAUM 01 / 03</div>
+        <div class="room-name-h" id="sp-r-name"></div>
+        <div class="room-desc-p" id="sp-r-desc"></div>
+        <button class="btn lg g" id="sp-enter-btn">RAUM BETRETEN →</button>
+      </div>
+    </div>
+    <!-- Question -->
+    <div id="sp-q" style="display:none">
+      <div class="hud">
+        <div class="hud-item">SCORE <span class="hud-val" id="sp-score">0</span></div>
+        <div class="hud-item">LEBEN <span class="hud-val" id="sp-lives">❤❤❤</span></div>
+        <div class="hud-item">FRAGE <span class="hud-val" id="sp-qn">1/10</span></div>
+      </div>
+      <div class="prog-wrap"><div class="prog-fill" id="sp-prog" style="width:0%"></div></div>
+      <div class="q-meta">
+        <span class="q-tag" id="sp-qtag">—</span>
+        <span class="timer-pill" id="sp-timer">60</span>
+      </div>
+      <div class="q-box" id="sp-qtext"></div>
+      <div class="options-grid" id="sp-opts"></div>
+      <div class="expl-box" id="sp-expl"></div>
+      <div class="next-row" id="sp-next">
+        <button class="btn g" id="sp-next-btn">WEITER →</button>
+      </div>
+    </div>
+    <!-- Result -->
+    <div id="sp-result" style="display:none">
+      <div class="result-wrap">
+        <div class="res-title" id="sp-res-title">ESCAPED!</div>
+        <div class="res-sub" id="sp-res-sub"></div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="stat-lbl">Score</div><div class="stat-val" id="sp-res-score">0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Zeit</div><div class="stat-val" id="sp-res-time">0s</div></div>
+          <div class="stat-card"><div class="stat-lbl">Fehler</div><div class="stat-val" id="sp-res-err">0</div></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn g" id="sp-replay-btn">NOCHMAL</button>
+          <button class="btn" id="sp-home-btn">MENÜ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ██ MP MENU ██ -->
+<div id="s-mp-menu" class="screen">
+  <div class="center-wrap">
+    <div class="page-head">
+      <div class="page-logo">MULTIPLAYER</div>
+      <button class="back-btn" id="mpm-back">◄ Menü</button>
+    </div>
+    <div class="mp-title">WÄHLE DEINEN MODUS</div>
+    <div class="mp-sub">&gt; Host ein Spiel oder tritt bei _</div>
+    <div class="menu-cards">
+      <div class="mode-card" id="btn-host">
+        <span class="mode-icon">📡</span>
+        <div class="mode-title">HOST</div>
+        <div class="mode-desc">Erstelle ein Spiel und lade Freunde ein</div>
+        <span class="mode-badge badge-b">CODE GENERIEREN</span>
+      </div>
+      <div class="mode-card green" id="btn-join">
+        <span class="mode-icon">🔗</span>
+        <div class="mode-title">BEITRETEN</div>
+        <div class="mode-desc">Code eingeben und mitspielen</div>
+        <span class="mode-badge badge-g">CODE EINGEBEN</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ██ MP HOST LOBBY ██ -->
+<div id="s-host" class="screen">
+  <div class="center-wrap">
+    <div class="page-head">
+      <div class="page-logo">LOBBY</div>
+      <button class="back-btn" id="host-back">◄ Beenden</button>
+    </div>
+    <div class="mp-title">SPIELER WARTEN...</div>
+    <div class="mp-sub">&gt; Teile diesen Code mit deinen Freunden</div>
+    <div class="code-display">
+      <div class="code-label">GAME CODE</div>
+      <div class="code-big" id="h-code">—</div>
+    </div>
+    <div class="p-count" id="h-pcount">1 / 8 Spieler</div>
+    <div class="player-chips" id="h-chips"></div>
+    <div id="h-waiting" style="padding:1.5rem 0">
+      <div class="spin"></div>
+      <div class="wait-txt">Warte auf Spieler...</div>
+    </div>
+    <button class="btn lg g" id="h-start-btn" style="display:none">SPIEL STARTEN →</button>
+  </div>
+</div>
+
+<!-- ██ MP JOIN ██ -->
+<div id="s-join" class="screen">
+  <div class="wrap" style="max-width:420px">
+    <div class="page-head">
+      <div class="page-logo">BEITRETEN</div>
+      <button class="back-btn" id="join-back">◄ Zurück</button>
+    </div>
+    <div style="text-align:center">
+      <div class="mp-title" style="margin-bottom:1.5rem">CODE EINGEBEN</div>
+      <input class="txt-input" id="join-name" placeholder="DEIN NAME" maxlength="16">
+      <input class="txt-input code-input" id="join-code" placeholder="1234" maxlength="4">
+      <button class="btn lg g" id="join-btn" style="margin-top:.5rem">BEITRETEN →</button>
+      <div class="err-msg" id="join-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ██ MP PLAYER WAIT ██ -->
+<div id="s-pwait" class="screen">
+  <div class="center-wrap">
+    <div class="page-head">
+      <div class="page-logo">VERBUNDEN</div>
+      <button class="back-btn" id="pwait-back">◄ Verlassen</button>
+    </div>
+    <div style="padding:3rem 0">
+      <div class="spin"></div>
+      <div class="wait-txt" id="pwait-txt">Verbunden! Warte auf Host...</div>
+    </div>
+    <div class="player-chips" id="pw-chips"></div>
+  </div>
+</div>
+
+<!-- ██ MP GAME ██ -->
+<div id="s-mpgame" class="screen">
+  <!-- HUD -->
+  <div class="mp-top">
+    <div class="mp-pscore" id="mp-p1box">
+      <div class="mp-pname" id="mp-p1name">P1</div>
+      <div class="mp-pts" id="mp-p1pts">0</div>
+    </div>
+    <div class="mp-center-hud">
+      <div class="mp-timer" id="mp-gtimer">5:00</div>
+      <div class="mp-qtag" id="mp-qtag">FRAGE 1/10</div>
+    </div>
+    <div class="mp-pscore" id="mp-p2box">
+      <div class="mp-pname" id="mp-p2name">P2</div>
+      <div class="mp-pts" id="mp-p2pts">0</div>
+    </div>
+  </div>
+  <div class="prog-wrap" style="border-radius:0;margin:0">
+    <div class="prog-fill" id="mp-prog" style="width:0%"></div>
+  </div>
+  <!-- Question -->
+  <div class="mp-qa" id="mp-qa">
+    <div class="q-box" id="mp-qtext">—</div>
+    <div class="k-grid" id="mp-opts"></div>
+    <div class="expl-box" id="mp-expl"></div>
+  </div>
+  <!-- Result overlay -->
+  <div id="mp-result" style="display:none">
+    <div class="mp-result">
+      <div class="crown">🏆</div>
+      <div class="winner-lbl">GEWINNER</div>
+      <div class="winner-n" id="mp-winner"></div>
+      <div class="score-table" id="mp-score-tbl"></div>
+      <div class="btn-row">
+        <button class="btn g" id="mp-replay-btn">NOCHMAL</button>
+        <button class="btn" id="mp-home-btn2">MENÜ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════
+// DATA
+// ════════════════════════════════════
+const ROOMS = [
+  {name:"Binary Basement", desc:"Binärcodes und Zahlensysteme knacken"},
+  {name:"Algorithm Alley", desc:"Algorithmen, Schleifen und Bedingungen"},
+  {name:"Network Nexus",   desc:"Internet, IP-Adressen und Protokolle"}
+];
+
+const ALL_Q = [
+  {room:0, q:"Was ist der Dezimalwert von Binärzahl 1010?",
+   o:["8","10","12","16"], c:1, e:"1×8 + 0×4 + 1×2 + 0×1 = 10"},
+  {room:0, q:"Welche Zahl folgt im Binärsystem auf 0111?",
+   o:["0100","1000","1010","0110"], c:1, e:"0111 = 7, die nächste ist 8 = 1000"},
+  {room:0, q:"Wie viele Werte kann man mit 4 Bits darstellen?",
+   o:["4","8","16","32"], c:2, e:"2⁴ = 16 Werte (0 bis 15)"},
+  {room:1, q:"Was ist das Ergebnis?\n  x = 0\n  WIEDERHOLE 5 MAL:\n    x = x + 3\n  AUSGABE x",
+   o:["5","8","15","3"], c:2, e:"5 × 3 = 15"},
+  {room:1, q:"Was wird ausgegeben?\n  x = 7\n  WENN x > 5 UND x < 10:\n    AUSGABE 'Treffer'\n  SONST:\n    AUSGABE 'Nein'",
+   o:["Treffer","Nein","Fehler","Nichts"], c:0, e:"7 > 5 und 7 < 10 → beide Bedingungen wahr → 'Treffer'"},
+  {room:1, q:"Was bedeutet O(n²) Komplexität?",
+   o:["Laufzeit halbiert sich","Laufzeit verdoppelt sich bei 2× Eingabe","Laufzeit vervierfacht sich bei 2× Eingabe","Immer gleich schnell"], c:2, e:"(2n)² = 4n² — viermal so lang bei doppelter Eingabe"},
+  {room:1, q:"🔐 HACKER-RÄTSEL: Ich bin gerade, durch 4 teilbar, kleiner als 20, und mein Binärwert beginnt mit 11. Wer bin ich?",
+   o:["8","12","16","4"], c:1, e:"12 = 1100₂ (beginnt mit 11), gerade, ÷4 = 3, < 20 ✓"},
+  {room:2, q:"Was ist eine IP-Adresse?",
+   o:["Ein WLAN-Passwort","Eine eindeutige Geräteadresse im Netzwerk","Der Name einer Webseite","Das Betriebssystem des Routers"], c:1, e:"IP = Internet Protocol — identifiziert Geräte eindeutig im Netzwerk"},
+  {room:2, q:"Was macht ein DNS-Server?",
+   o:["Verbindet Router miteinander","Übersetzt Domainnamen in IP-Adressen","Verschlüsselt E-Mails","Speichert Passwörter"], c:1, e:"DNS = Telefonbuch des Internets: google.com → 142.250.x.x"},
+  {room:2, q:"Was unterscheidet HTTPS von HTTP?",
+   o:["Schnellere Verbindung","Älteres Protokoll","Verschlüsselte, sichere Verbindung","Verbindung ohne Passwort"], c:2, e:"Das 'S' = Secure. TLS/SSL verschlüsselt die gesamte Verbindung"},
+];
+
+// ════════════════════════════════════
+// UTILITY
+// ════════════════════════════════════
+const $ = id => document.getElementById(id);
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+let timers = [];
+function clearTimers(){ timers.forEach(t=>{clearInterval(t);clearTimeout(t)}); timers=[]; }
+function ti(fn,ms){ const t=setInterval(fn,ms); timers.push(t); return t; }
+function to(fn,ms){ const t=setTimeout(fn,ms); timers.push(t); return t; }
+
+// ════════════════════════════════════
+// NAV BINDINGS
+// ════════════════════════════════════
+$('btn-sp').addEventListener('click', startSP);
+$('btn-mp').addEventListener('click', () => show('s-mp-menu'));
+$('sp-back').addEventListener('click', () => { clearTimers(); show('s-menu'); });
+$('sp-enter-btn').addEventListener('click', spBeginRoom);
+$('sp-next-btn').addEventListener('click', spNext);
+$('sp-replay-btn').addEventListener('click', startSP);
+$('sp-home-btn').addEventListener('click', () => { clearTimers(); show('s-menu'); });
+$('mpm-back').addEventListener('click', () => show('s-menu'));
+$('btn-host').addEventListener('click', hostGame);
+$('btn-join').addEventListener('click', () => show('s-join'));
+$('host-back').addEventListener('click', () => { clearTimers(); show('s-menu'); });
+$('h-start-btn').addEventListener('click', hostStart);
+$('join-back').addEventListener('click', () => show('s-mp-menu'));
+$('join-btn').addEventListener('click', joinGame);
+$('pwait-back').addEventListener('click', () => { clearTimers(); show('s-menu'); });
+$('mp-replay-btn').addEventListener('click', () => show('s-mp-menu'));
+$('mp-home-btn2').addEventListener('click', () => { clearTimers(); show('s-menu'); });
+
+// ════════════════════════════════════
+// SINGLEPLAYER
+// ════════════════════════════════════
+let sp = {};
+
+function startSP(){
+  clearTimers();
+  // Build ordered question list: room0 × 3, room1 × 4, room2 × 3
+  const r0 = shuffle(ALL_Q.filter(q=>q.room===0));
+  const r1 = shuffle(ALL_Q.filter(q=>q.room===1));
+  const r2 = shuffle(ALL_Q.filter(q=>q.room===2));
+  sp = {
+    qs: [...r0, ...r1, ...r2],
+    qi: 0, score: 0, lives: 3, errors: 0,
+    t0: Date.now(), tval: 60, tint: null, curRoom: -1
+  };
+  show('s-sp');
+  $('sp-intro').style.display = 'none';
+  $('sp-q').style.display = 'none';
+  $('sp-result').style.display = 'none';
+  spCheckRoom();
+}
+
+function spCheckRoom(){
+  const roomIdx = sp.qs[sp.qi].room;
+  if(roomIdx !== sp.curRoom){
+    sp.curRoom = roomIdx;
+    const r = ROOMS[roomIdx];
+    $('sp-r-num').textContent = `RAUM 0${roomIdx+1} / 03`;
+    $('sp-r-name').textContent = r.name;
+    $('sp-r-desc').textContent = r.desc;
+    $('sp-q').style.display = 'none';
+    $('sp-intro').style.display = 'block';
+  } else {
+    spLoad();
+  }
+}
+
+function spBeginRoom(){
+  $('sp-intro').style.display = 'none';
+  $('sp-q').style.display = 'block';
+  spLoad();
+}
+
+function spLoad(){
+  const q = sp.qs[sp.qi];
+  clearInterval(sp.tint);
+  $('sp-q').style.display = 'block';
+  $('sp-qn').textContent = `${sp.qi+1}/10`;
+  $('sp-qtag').textContent = ROOMS[q.room].name.toUpperCase();
+  $('sp-prog').style.width = `${(sp.qi/10)*100}%`;
+  $('sp-qtext').textContent = q.q;
+  $('sp-expl').textContent = '';
+  $('sp-expl').className = 'expl-box';
+  $('sp-next').className = 'next-row';
+  $('sp-score').textContent = sp.score;
+  spLives();
+
+  // Options
+  const letters = ['A','B','C','D'];
+  $('sp-opts').innerHTML = '';
+  q.o.forEach((txt, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = `<span class="opt-ltr">${letters[i]}</span>${txt}`;
+    b.addEventListener('click', () => spAnswer(i));
+    $('sp-opts').appendChild(b);
+  });
+
+  // Timer
+  sp.tval = 60;
+  const tp = $('sp-timer');
+  tp.textContent = '60';
+  tp.className = 'timer-pill';
+  sp.tint = ti(() => {
+    sp.tval--;
+    tp.textContent = sp.tval;
+    if(sp.tval <= 10) tp.className = 'timer-pill warn';
+    if(sp.tval <= 5)  tp.className = 'timer-pill dng';
+    if(sp.tval <= 0){ clearInterval(sp.tint); spTimeout(); }
+  }, 1000);
+}
+
+function spAnswer(idx){
+  clearInterval(sp.tint);
+  const q = sp.qs[sp.qi];
+  const btns = $('sp-opts').querySelectorAll('.opt');
+  btns.forEach(b => b.setAttribute('disabled',''));
+  if(idx === q.c){
+    btns[idx].classList.add('correct');
+    sp.score += 100 + sp.tval;
+    $('sp-score').textContent = sp.score;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.c].classList.add('correct');
+    sp.lives--; sp.errors++;
+    spLives();
+    if(sp.lives <= 0){ to(()=>spEnd(false), 1200); return; }
+  }
+  $('sp-expl').textContent = '💡 ' + q.e;
+  $('sp-expl').className = 'expl-box show';
+  $('sp-next').className = 'next-row show';
+}
+
+function spTimeout(){
+  const q = sp.qs[sp.qi];
+  const btns = $('sp-opts').querySelectorAll('.opt');
+  btns.forEach(b => b.setAttribute('disabled',''));
+  btns[q.c].classList.add('correct');
+  sp.lives--; sp.errors++;
+  spLives();
+  $('sp-expl').textContent = '⏰ Zeit abgelaufen! ' + q.e;
+  $('sp-expl').className = 'expl-box show';
+  if(sp.lives <= 0){ to(()=>spEnd(false), 1400); return; }
+  $('sp-next').className = 'next-row show';
+}
+
+function spNext(){
+  sp.qi++;
+  if(sp.qi >= sp.qs.length){ spEnd(true); return; }
+  spCheckRoom();
+}
+
+function spLives(){
+  $('sp-lives').textContent = '❤'.repeat(sp.lives) + '🖤'.repeat(Math.max(0,3-sp.lives));
+}
+
+function spEnd(won){
+  clearInterval(sp.tint);
+  $('sp-q').style.display = 'none';
+  $('sp-intro').style.display = 'none';
+  $('sp-result').style.display = 'block';
+  const sec = Math.round((Date.now()-sp.t0)/1000);
+  const t = $('sp-res-title');
+  t.textContent = won ? 'ESCAPED! 🎉' : 'ERWISCHT! ☠';
+  t.className = 'res-title ' + (won ? 'ok' : 'fail');
+  $('sp-res-sub').textContent = won ? 'SYSTEM ERFOLGREICH GEHACKT' : 'DAS SYSTEM HAT DICH GEFANGEN';
+  $('sp-res-score').textContent = sp.score;
+  $('sp-res-time').textContent = sec + 's';
+  $('sp-res-err').textContent = sp.errors;
+}
+
+// ════════════════════════════════════
+// MULTIPLAYER (localStorage sync)
+// ════════════════════════════════════
+const LS = 'esc_';
+const store = (code, data) => localStorage.setItem(LS+code, JSON.stringify(data));
+const load  = (code) => { try { return JSON.parse(localStorage.getItem(LS+code)); } catch{ return null; } };
+
+let mp = {};
+
+function genCode(){ return String(1000 + Math.floor(Math.random()*9000)); }
+
+function hostGame(){
+  clearTimers();
+  const code = genCode();
+  const qs = shuffle(ALL_Q);
+  const state = { code, status:'lobby', ended:false, qi:0,
+    players:[{name:'HOST', score:0}], questions:qs };
+  store(code, state);
+  mp = { role:'host', code, myIdx:0, qi:0, state, tint:null, gtimer:300, qtimer:20, answered:false };
+  $('h-code').textContent = code;
+  $('h-pcount').textContent = '1 / 8 Spieler';
+  $('h-chips').innerHTML = '<div class="chip"><span class="chip-dot"></span>HOST (Du)</div>';
+  $('h-start-btn').style.display = 'none';
+  $('h-waiting').style.display = 'block';
+  show('s-host');
+  mp.poll = ti(hostPoll, 800);
+}
+
+function hostPoll(){
+  const s = load(mp.code); if(!s) return;
+  const ps = s.players;
+  $('h-pcount').textContent = `${ps.length} / 8 Spieler`;
+  $('h-chips').innerHTML = ps.map(p=>`<div class="chip"><span class="chip-dot"></span>${p.name}</div>`).join('');
+  if(ps.length >= 2){
+    $('h-start-btn').style.display = 'inline-flex';
+    $('h-waiting').style.display = 'none';
+  }
+}
+
+function hostStart(){
+  clearInterval(mp.poll);
+  const s = load(mp.code); if(!s) return;
+  s.status = 'playing';
+  store(mp.code, s);
+  mp.state = s;
+  mpInitGame(s);
+  mpRunHost();
+}
+
+function joinGame(){
+  const name = $('join-name').value.trim() || 'Anon';
+  const code = $('join-code').value.trim();
+  $('join-err').style.display = 'none';
+  if(code.length !== 4){ showErr('Bitte 4-stelligen Code eingeben!'); return; }
+  const s = load(code);
+  if(!s){ showErr('Kein Spiel gefunden! Code prüfen.'); return; }
+  if(s.status !== 'lobby'){ showErr('Spiel läuft bereits!'); return; }
+  if(s.players.length >= 8){ showErr('Lobby voll!'); return; }
+  const myName = name;
+  s.players.push({name: myName, score:0});
+  const myIdx = s.players.length - 1;
+  store(code, s);
+  mp = { role:'player', code, myIdx, myName };
+  $('pwait-txt').textContent = `Verbunden als "${myName}" — Warte auf Host...`;
+  show('s-pwait');
+  mp.poll = ti(playerWaitPoll, 800);
+}
+
+function showErr(msg){ $('join-err').textContent = msg; $('join-err').style.display = 'block'; }
+
+function playerWaitPoll(){
+  const s = load(mp.code); if(!s) return;
+  $('pw-chips').innerHTML = s.players.map(p=>`<div class="chip"><span class="chip-dot"></span>${p.name}</div>`).join('');
+  if(s.status === 'playing'){
+    clearInterval(mp.poll);
+    mp.state = s;
+    mp.qi = s.qi || 0;
+    mp.answered = false;
+    mpInitGame(s);
+    mpRunPlayer();
+  }
+}
+
+function mpInitGame(s){
+  show('s-mpgame');
+  $('mp-result').style.display = 'none';
+  $('mp-qa').style.display = 'block';
+  const ps = s.players;
+  $('mp-p1name').textContent = ps[0] ? ps[0].name : 'P1';
+  $('mp-p2name').textContent = ps[1] ? ps[1].name : 'P2';
+  $('mp-p1pts').textContent  = ps[0] ? ps[0].score : 0;
+  $('mp-p2pts').textContent  = ps[1] ? ps[1].score : 0;
+}
+
+// HOST drives the game
+function mpRunHost(){
+  mp.qi = 0;
+  mp.gtimer = 300;
+  mp.answered = false;
+  mpLoadQ();
+  // global 5-min timer
+  mp.gtint = ti(() => {
+    mp.gtimer--;
+    const m = Math.floor(mp.gtimer/60);
+    const s = mp.gtimer % 60;
+    const el = $('mp-gtimer');
+    el.textContent = m + ':' + (s<10?'0':'') + s;
+    el.className = 'mp-timer' + (mp.gtimer<=30?' dng':mp.gtimer<=60?' warn':'');
+    if(mp.gtimer <= 0){ clearTimers(); mpEnd(); }
+  }, 1000);
+}
+
+// PLAYER polls for new question index
+function mpRunPlayer(){
+  mp.qi = -1;
+  mp.poll = ti(() => {
+    const s = load(mp.code); if(!s) return;
+    mp.state = s;
+    // Sync score display
+    const ps = s.players;
+    if(ps[0]) $('mp-p1pts').textContent = ps[0].score;
+    if(ps[1]) $('mp-p2pts').textContent = ps[1].score;
+    // New question?
+    if(s.qi !== mp.qi){
+      mp.qi = s.qi;
+      mp.answered = false;
+      if(s.ended){ clearInterval(mp.poll); mpShowResult(s); return; }
+      if(s.qi >= s.questions.length){ clearInterval(mp.poll); mpShowResult(s); return; }
+      mpLoadQForPlayer(s.questions[s.qi]);
+    }
+    // Timer sync
+    if(s.qtimer !== undefined){
+      const t = $('mp-gtimer');
+      // just update score
+    }
+  }, 600);
+}
+
+function mpLoadQ(){
+  if(mp.qi >= mp.state.questions.length){ mpEnd(); return; }
+  const q = mp.state.questions[mp.qi];
+  mp.answered = false;
+  // Update LS with current qi so players see it
+  const s = load(mp.code);
+  if(s){ s.qi = mp.qi; store(mp.code, s); mp.state = s; }
+  $('mp-qtag').textContent = `FRAGE ${mp.qi+1}/${mp.state.questions.length}`;
+  $('mp-prog').style.width = `${(mp.qi/mp.state.questions.length)*100}%`;
+  $('mp-qtext').textContent = q.q;
+  $('mp-expl').textContent = '';
+  $('mp-expl').className = 'expl-box';
+  renderKButtons(q);
+  // per-question 20s timer
+  clearInterval(mp.qtint);
+  mp.qtime = 20;
+  mp.qtint = ti(() => {
+    mp.qtime--;
+    if(mp.qtime <= 0){
+      clearInterval(mp.qtint);
+      if(!mp.answered) mpReveal(false, -1);
+    }
+  }, 1000);
+}
+
+function mpLoadQForPlayer(q){
+  $('mp-qtag').textContent = `FRAGE ${mp.qi+1}`;
+  $('mp-prog').style.width = `${(mp.qi/mp.state.questions.length)*100}%`;
+  $('mp-qtext').textContent = q.q;
+  $('mp-expl').textContent = '';
+  $('mp-expl').className = 'expl-box';
+  renderKButtons(q);
+}
+
+function renderKButtons(q){
+  const icons = ['▲','◆','●','■'];
+  const cls   = ['k1','k2','k3','k4'];
+  $('mp-opts').innerHTML = '';
+  q.o.forEach((txt, i) => {
+    const b = document.createElement('button');
+    b.className = 'kbtn ' + cls[i];
+    b.innerHTML = `<span class="k-ico">${icons[i]}</span>${txt}`;
+    b.addEventListener('click', () => mpAnswer(i));
+    $('mp-opts').appendChild(b);
+  });
+}
+
+function mpAnswer(idx){
+  if(mp.answered) return;
+  mp.answered = true;
+  const q = mp.state.questions[mp.qi];
+  const correct = idx === q.c;
+  if(correct){
+    const pts = 100 + (mp.role==='host' ? mp.qtime : 10) * 5;
+    const s = load(mp.code);
+    if(s && s.players[mp.myIdx]){
+      s.players[mp.myIdx].score += pts;
+      store(mp.code, s);
+      mp.state = s;
+    }
+  }
+  if(mp.role === 'host'){
+    clearInterval(mp.qtint);
+    mpReveal(correct, idx);
+  } else {
+    // Player just highlights their answer, host controls flow
+    const btns = $('mp-opts').querySelectorAll('.kbtn');
+    btns.forEach(b => b.setAttribute('disabled',''));
+    btns[idx].classList.add(correct ? 'reveal-ok' : 'reveal-no');
+    // Show expl after delay
+    to(() => {
+      $('mp-expl').textContent = '💡 ' + q.e;
+      $('mp-expl').className = 'expl-box show';
+    }, 1200);
+  }
+  // Refresh HUD
+  to(() => {
+    const s = load(mp.code); if(!s) return;
+    if(s.players[0]) $('mp-p1pts').textContent = s.players[0].score;
+    if(s.players[1]) $('mp-p2pts').textContent = s.players[1].score;
+  }, 400);
+}
+
+function mpReveal(correct, chosen){
+  const q = mp.state.questions[mp.qi];
+  const btns = $('mp-opts').querySelectorAll('.kbtn');
+  btns.forEach((b,i) => {
+    b.setAttribute('disabled','');
+    b.classList.add(i===q.c ? 'reveal-ok' : 'reveal-no');
+  });
+  $('mp-expl').textContent = '💡 ' + q.e;
+  $('mp-expl').className = 'expl-box show';
+  // Score refresh
+  to(() => {
+    const s = load(mp.code); if(!s) return;
+    mp.state = s;
+    if(s.players[0]) $('mp-p1pts').textContent = s.players[0].score;
+    if(s.players[1]) $('mp-p2pts').textContent = s.players[1].score;
+  }, 300);
+  to(() => {
+    mp.qi++;
+    if(mp.qi >= mp.state.questions.length) mpEnd();
+    else mpLoadQ();
+  }, 3000);
+}
+
+function mpEnd(){
+  clearTimers();
+  const s = load(mp.code);
+  if(s){ s.ended = true; store(mp.code, s); }
+  mpShowResult(s || mp.state);
+}
+
+function mpShowResult(s){
+  $('mp-qa').style.display = 'none';
+  $('mp-result').style.display = 'block';
+  if(!s){ return; }
+  const sorted = [...s.players].sort((a,b)=>(b.score||0)-(a.score||0));
+  $('mp-winner').textContent = sorted[0] ? sorted[0].name : '???';
+  const medals = ['🥇','🥈','🥉'];
+  $('mp-score-tbl').innerHTML = sorted.map((p,i)=>`
+    <div class="score-row${i===0?' first':''}">
+      <span class="score-pos">${medals[i]||('#'+(i+1))}</span>
+      <span class="score-name">${p.name}</span>
+      <span class="score-pts">${p.score||0} pts</span>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>
