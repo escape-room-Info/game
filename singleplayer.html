@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Singleplayer — ESCAPE://SYSTEM</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="wrap fade-in">
+  <div class="page-head">
+    <div class="page-logo">ESCAPE://SYSTEM</div>
+    <a href="index.html" class="back-link">Menü</a>
+  </div>
+
+  <!-- ROOM INTRO -->
+  <div id="room-intro" style="display:none">
+    <div class="room-intro">
+      <div class="room-num"    id="r-num">RAUM 01 / 03</div>
+      <div class="room-title"  id="r-name"></div>
+      <div class="room-desc"   id="r-desc"></div>
+      <button class="btn lg g" id="enter-btn">RAUM BETRETEN →</button>
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div id="q-area" style="display:none">
+    <div class="hud">
+      <div class="hud-item">SCORE <span class="hud-val" id="hud-score">0</span></div>
+      <div class="hud-item">LEBEN <span class="hud-val" id="hud-lives">❤❤❤</span></div>
+      <div class="hud-item">FRAGE <span class="hud-val" id="hud-qn">1/10</span></div>
+    </div>
+    <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="q-meta">
+      <span class="q-tag"    id="q-tag">—</span>
+      <span class="timer-pill" id="timer">60</span>
+    </div>
+    <div class="q-box"     id="q-text"></div>
+    <div class="options"   id="opts"></div>
+    <div class="expl-box"  id="expl"></div>
+    <div class="next-row"  id="next-row">
+      <button class="btn g" id="next-btn">WEITER →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" style="display:none">
+    <div class="result">
+      <div class="res-title" id="res-title"></div>
+      <div class="res-sub"   id="res-sub"></div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-lbl">Score</div><div class="stat-val" id="res-score">0</div></div>
+        <div class="stat-card"><div class="stat-lbl">Zeit</div> <div class="stat-val" id="res-time">0s</div></div>
+        <div class="stat-card"><div class="stat-lbl">Fehler</div><div class="stat-val" id="res-err">0</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn g" id="replay-btn">NOCHMAL</button>
+        <a href="index.html" class="btn">MENÜ</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const hide = id => $(id).style.display = 'none';
+const show = id => $(id).style.display = 'block';
+
+let sp = {};
+
+function startGame() {
+  const r0 = shuffle(ALL_Q.filter(q => q.room === 0));
+  const r1 = shuffle(ALL_Q.filter(q => q.room === 1));
+  const r2 = shuffle(ALL_Q.filter(q => q.room === 2));
+  sp = {
+    qs: [...r0, ...r1, ...r2],
+    qi: 0, score: 0, lives: 3, errors: 0,
+    t0: Date.now(), tval: 60, tint: null, curRoom: -1
+  };
+  hide('room-intro'); hide('q-area'); hide('result');
+  checkRoom();
+}
+
+function checkRoom() {
+  const roomIdx = sp.qs[sp.qi].room;
+  if (roomIdx !== sp.curRoom) {
+    sp.curRoom = roomIdx;
+    const r = ROOMS[roomIdx];
+    $('r-num').textContent  = `RAUM 0${roomIdx+1} / 03`;
+    $('r-name').textContent = r.name;
+    $('r-desc').textContent = r.desc;
+    hide('q-area');
+    show('room-intro');
+  } else {
+    loadQ();
+  }
+}
+
+function loadQ() {
+  hide('room-intro');
+  show('q-area');
+  const q = sp.qs[sp.qi];
+  clearInterval(sp.tint);
+
+  $('hud-qn').textContent  = `${sp.qi + 1}/10`;
+  $('q-tag').textContent   = ROOMS[q.room].name.toUpperCase();
+  $('prog').style.width    = `${(sp.qi / 10) * 100}%`;
+  $('q-text').textContent  = q.q;
+  $('expl').textContent    = '';
+  $('expl').className      = 'expl-box';
+  $('next-row').className  = 'next-row';
+  $('hud-score').textContent = sp.score;
+  updateLives();
+
+  const letters = ['A','B','C','D'];
+  $('opts').innerHTML = '';
+  q.o.forEach((txt, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = `<span class="opt-ltr">${letters[i]}</span>${txt}`;
+    b.addEventListener('click', () => answer(i));
+    $('opts').appendChild(b);
+  });
+
+  sp.tval = 60;
+  const tp = $('timer');
+  tp.textContent = '60';
+  tp.className = 'timer-pill';
+  sp.tint = setInterval(() => {
+    sp.tval--;
+    tp.textContent = sp.tval;
+    if (sp.tval <= 10) tp.className = 'timer-pill warn';
+    if (sp.tval <=  5) tp.className = 'timer-pill dng';
+    if (sp.tval <=  0) { clearInterval(sp.tint); timeUp(); }
+  }, 1000);
+}
+
+function answer(idx) {
+  clearInterval(sp.tint);
+  const q = sp.qs[sp.qi];
+  const btns = $('opts').querySelectorAll('.opt');
+  btns.forEach(b => b.setAttribute('disabled', ''));
+  if (idx === q.c) {
+    btns[idx].classList.add('correct');
+    sp.score += 100 + sp.tval;
+    $('hud-score').textContent = sp.score;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.c].classList.add('correct');
+    sp.lives--; sp.errors++;
+    updateLives();
+    if (sp.lives <= 0) { setTimeout(() => endGame(false), 1300); return; }
+  }
+  $('expl').textContent = '💡 ' + q.e;
+  $('expl').className = 'expl-box show';
+  $('next-row').className = 'next-row show';
+}
+
+function timeUp() {
+  const q = sp.qs[sp.qi];
+  const btns = $('opts').querySelectorAll('.opt');
+  btns.forEach(b => b.setAttribute('disabled', ''));
+  btns[q.c].classList.add('correct');
+  sp.lives--; sp.errors++;
+  updateLives();
+  $('expl').textContent = '⏰ Zeit! ' + q.e;
+  $('expl').className = 'expl-box show';
+  if (sp.lives <= 0) { setTimeout(() => endGame(false), 1400); return; }
+  $('next-row').className = 'next-row show';
+}
+
+function nextQ() {
+  sp.qi++;
+  if (sp.qi >= sp.qs.length) { endGame(true); return; }
+  checkRoom();
+}
+
+function updateLives() {
+  $('hud-lives').textContent = '❤'.repeat(sp.lives) + '🖤'.repeat(Math.max(0, 3 - sp.lives));
+}
+
+function endGame(won) {
+  clearInterval(sp.tint);
+  hide('q-area'); hide('room-intro');
+  show('result');
+  const sec = Math.round((Date.now() - sp.t0) / 1000);
+  const t = $('res-title');
+  t.textContent = won ? 'ESCAPED! 🎉' : 'ERWISCHT! ☠';
+  t.className   = 'res-title ' + (won ? 'ok' : 'fail');
+  $('res-sub').textContent   = won ? 'SYSTEM ERFOLGREICH GEHACKT' : 'DAS SYSTEM HAT DICH GEFANGEN';
+  $('res-score').textContent = sp.score;
+  $('res-time').textContent  = sec + 's';
+  $('res-err').textContent   = sp.errors;
+}
+
+$('enter-btn').addEventListener('click', loadQ);
+$('next-btn').addEventListener('click',  nextQ);
+$('replay-btn').addEventListener('click', startGame);
+
+startGame();
+</script>
+</body>
+</html>
