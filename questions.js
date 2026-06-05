@@ -1,27 +1,4 @@
- // 1. Deine Fragen-Datenbank
 const ALL_Q = [
-    { room: 0, q: "Wofür steht die Zahl 1...", o: [...], c: 1, e: "..." },
-    // ... restliche Fragen ...
-];
-
-// 2. Die fehlende Hilfsfunktion (Hier einfügen!)
-function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-    }
-    return array;
-}
-
-// 3. Dein eigentlicher Spielcode (startGame, etc.)
-function startGame() {
-    // Hier wird shuffle vermutlich aufgerufen, z.B.:
-    // let shuffledQuestions = shuffle(ALL_Q);
-    // ...
-}
 
 room: 0,
 
@@ -154,3 +131,14 @@ e: "Der Router (oft die FritzBox o.ä.) verteilt das Internet und verbindet die 
 }
 
 ];
+
+// FÜGE DIE SHUFFLE-FUNKTION DIREKT HIER UNTER DEN FRAGEN EIN:
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+    return array;
