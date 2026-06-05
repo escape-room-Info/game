@@ -1,5 +1,14 @@
 const ALL_Q = [
 
+    // Definition der Räume für das Spiel
+const ROOMS = [
+    "Room 0: Binary Basement",
+    "Room 1: Algorithm Alley",
+    "Room 2: Network Nexus",
+    "Room 3: Cyber Security Sanctum",
+    "Room 4: Hardware & Web Lab"
+];
+
 // =========================================================================
 // --- ROOM 0: Binary Basement (Binärcodes, Bits & Zahlensysteme) ---
 // =========================================================================
