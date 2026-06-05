@@ -1,8 +1,27 @@
- const ALL_Q = [
+ // 1. Deine Fragen-Datenbank
+const ALL_Q = [
+    { room: 0, q: "Wofür steht die Zahl 1...", o: [...], c: 1, e: "..." },
+    // ... restliche Fragen ...
+];
 
-// --- ROOM 0: Binary Basement (Binärcodes & Zahlensysteme) ---
+// 2. Die fehlende Hilfsfunktion (Hier einfügen!)
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
+    return array;
+}
 
-{
+// 3. Dein eigentlicher Spielcode (startGame, etc.)
+function startGame() {
+    // Hier wird shuffle vermutlich aufgerufen, z.B.:
+    // let shuffledQuestions = shuffle(ALL_Q);
+    // ...
+}
 
 room: 0,
 
