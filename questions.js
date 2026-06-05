@@ -1,12 +1,12 @@
 // =========================================================================
-// 1. SPIEL-RAEUME DEFINITION (Eigenständig und ganz oben!)
+// 1. SPIEL-RAEUME DEFINITION (Als Objekte, damit .name funktioniert!)
 // =========================================================================
 const ROOMS = [
-    "Room 0: Binary Basement",
-    "Room 1: Algorithm Alley",
-    "Room 2: Network Nexus",
-    "Room 3: Cyber Security Sanctum",
-    "Room 4: Hardware & Web Lab"
+    { name: "Room 0: Binary Basement" },
+    { name: "Room 1: Algorithm Alley" },
+    { name: "Room 2: Network Nexus" },
+    { name: "Room 3: Cyber Security Sanctum" },
+    { name: "Room 4: Hardware & Web Lab" }
 ];
 
 // =========================================================================
