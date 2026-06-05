@@ -1,4 +1,6 @@
-// 1. Definition der Räume für das Spiel (Sauber als eigenes Array)
+// =========================================================================
+// 1. SPIEL-RAEUME DEFINITION (Eigenständig und ganz oben!)
+// =========================================================================
 const ROOMS = [
     "Room 0: Binary Basement",
     "Room 1: Algorithm Alley",
@@ -7,20 +9,12 @@ const ROOMS = [
     "Room 4: Hardware & Web Lab"
 ];
 
-// 2. Erst HIER fängt jetzt deine Fragen-Datenbank an
+// =========================================================================
+// 2. FRAGEN-DATENBANK (Fängt erst HIER sauber an!)
+// =========================================================================
 const ALL_Q = [
 
-// =========================================================================
 // --- ROOM 0: Binary Basement (Binärcodes, Bits & Zahlensysteme) ---
-// =========================================================================
-{
-room: 0,
-q: "Wofür steht die Zahl 1 im Binärsystem eines Computers meistens?",
-// ... ab hier läuft dein Code unverändert bis ganz nach unten weiter!
-
-// =========================================================================
-// --- ROOM 0: Binary Basement (Binärcodes, Bits & Zahlensysteme) ---
-// =========================================================================
 {
 room: 0,
 q: "Wofür steht die Zahl 1 im Binärsystem eines Computers meistens?",
@@ -85,9 +79,7 @@ c: 1,
 e: "Hardware besteht aus Milliarden winziger Schalter (Transistoren). Strom an oder aus ist technisch am sichersten zu messen."
 },
 
-// =========================================================================
 // --- ROOM 1: Algorithm Alley (Algorithmen, Schleifen & Logik) ---
-// =========================================================================
 {
 room: 1,
 q: "Was beschreibt das Wort 'Algorithmus' in der Informatik am besten?",
@@ -152,9 +144,7 @@ c: 2,
 e: "Ein 'Boolean' (boolescher Wert) kann exakt nur zwei Zustände annehmen: True oder False."
 },
 
-// =========================================================================
 // --- ROOM 2: Network Nexus (Internet, IP-Adressen & Protokolle) ---
-// =========================================================================
 {
 room: 2,
 q: "Wofür steht die bekannte Abkürzung 'WWW'?",
@@ -219,9 +209,7 @@ c: 1,
 e: "Weil es weltweit immer mehr Internet-Geräte gibt, gingen die alten IPv4-Adressen aus. IPv6 löst dieses Problem mit gigantisch vielen Adressen."
 },
 
-// =========================================================================
 // --- ROOM 3: Cyber Security Sanctum (Sicherheit, Viren & Passwörter) ---
-// =========================================================================
 {
 room: 3,
 q: "Was beschreibt der Begriff 'Phishing'?",
@@ -286,9 +274,7 @@ c: 1,
 e: "Im Gegensatz zu einem normalen Virus braucht ein Wurm kein Wirtsprogramm und verbreitet sich rasant von ganz alleine über das Internet."
 },
 
-// =========================================================================
 // --- ROOM 4: Hardware & Web Lab (Hardware, HTML & Web-Grundlagen) ---
-// =========================================================================
 {
 room: 4,
 q: "Welches Bauteil gilt als das 'Gehirn' des Computers?",
@@ -355,7 +341,9 @@ e: "Während HTML den Text liefert und CSS das Design macht, haucht JavaScript d
 
 ];
 
-// Die funktionierende Shuffle-Funktion bleibt erhalten!
+// =========================================================================
+// 3. HILFSFUNKTIONEN (Ganz unten)
+// =========================================================================
 function shuffle(array) {
     let currentIndex = array.length, randomIndex;
     while (currentIndex !== 0) {
