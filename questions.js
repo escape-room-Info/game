@@ -1,6 +1,4 @@
-const ALL_Q = [
-
-    // Definition der Räume für das Spiel
+// 1. Definition der Räume für das Spiel (Sauber als eigenes Array)
 const ROOMS = [
     "Room 0: Binary Basement",
     "Room 1: Algorithm Alley",
@@ -8,6 +6,17 @@ const ROOMS = [
     "Room 3: Cyber Security Sanctum",
     "Room 4: Hardware & Web Lab"
 ];
+
+// 2. Erst HIER fängt jetzt deine Fragen-Datenbank an
+const ALL_Q = [
+
+// =========================================================================
+// --- ROOM 0: Binary Basement (Binärcodes, Bits & Zahlensysteme) ---
+// =========================================================================
+{
+room: 0,
+q: "Wofür steht die Zahl 1 im Binärsystem eines Computers meistens?",
+// ... ab hier läuft dein Code unverändert bis ganz nach unten weiter!
 
 // =========================================================================
 // --- ROOM 0: Binary Basement (Binärcodes, Bits & Zahlensysteme) ---
