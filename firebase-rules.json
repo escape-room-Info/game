@@ -1,0 +1,31 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "leaderboard": {
+      "sp": {
+        ".read": true,
+        "$uid": {
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      },
+      "mp": {
+        ".read": true,
+        "$uid": {
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      }
+    },
+    "games": {
+      "$code": {
+        ".read": true,
+        ".write": true,
+        ".validate": "newData.hasChildren(['code','status','players','questions'])"
+      }
+    }
+  }
+}

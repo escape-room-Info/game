@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Hintergrund -->
+  <rect width="120" height="120" rx="18" fill="#07090f"/>
+  <!-- Cyan Rahmen -->
+  <rect width="120" height="120" rx="18" fill="none" stroke="#00c8ff" stroke-width="3"/>
+  <!-- Titelleiste -->
+  <rect x="0" y="0" width="120" height="24" rx="18" fill="#0c1a2e"/>
+  <rect x="0" y="12" width="120" height="12" fill="#0c1a2e"/>
+  <!-- Traffic Lights -->
+  <circle cx="18" cy="12" r="5" fill="#ff4466"/>
+  <circle cx="34" cy="12" r="5" fill="#ffaa00"/>
+  <circle cx="50" cy="12" r="5" fill="#00ff9d"/>
+  <!-- Trennlinie unter Titelleiste -->
+  <line x1="0" y1="24" x2="120" y2="24" stroke="#1e3a5f" stroke-width="1"/>
+  <!-- /> Symbol -->
+  <text x="60" y="74" text-anchor="middle"
+        font-family="'Courier New', Courier, monospace"
+        font-size="30" font-weight="900"
+        fill="#00c8ff" letter-spacing="-1">/&gt;</text>
+  <!-- Cursor Blink -->
+  <rect x="44" y="84" width="10" height="3" rx="1" fill="#00ff9d" opacity="0.9"/>
+</svg>
