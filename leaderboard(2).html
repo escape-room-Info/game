@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard — ESCAPE://SYSTEM</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* ── extra leaderboard styles ── */
+.lb-header {
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+}
+.lb-header-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: .08em;
+  margin-bottom: .4rem;
+}
+.lb-header-title span { color: var(--amber); }
+.lb-header-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .78rem;
+  color: var(--dim);
+  letter-spacing: .15em;
+}
+
+/* tabs */
+.lb-tabs {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: 1.8rem;
+  background: var(--bg2);
+  padding: .4rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.lb-tab {
+  flex: 1;
+  font-family: 'Orbitron', monospace;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  padding: .65rem;
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all .2s;
+}
+.lb-tab.active {
+  background: rgba(0,200,255,.12);
+  color: var(--cyan);
+  box-shadow: 0 0 12px rgba(0,200,255,.15);
+}
+.lb-tab.active.g { background: rgba(0,255,157,.1); color: var(--green); box-shadow: 0 0 12px rgba(0,255,157,.15); }
+
+/* podium */
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  padding: 0 .5rem;
+}
+.podium-slot {
+  flex: 1;
+  max-width: 160px;
+  text-align: center;
+  position: relative;
+}
+.podium-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin: 0 auto .5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: 2px solid var(--border);
+  background: var(--bg2);
+  position: relative;
+}
+.podium-slot:nth-child(1) .podium-avatar { border-color: #9ca3af; width: 44px; height: 44px; font-size: 1.2rem; }
+.podium-slot:nth-child(2) .podium-avatar { border-color: var(--amber); width: 60px; height: 60px; font-size: 1.7rem; }
+.podium-slot:nth-child(3) .podium-avatar { border-color: #b45309; width: 44px; height: 44px; font-size: 1.2rem; }
+.crown-icon {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+}
+.podium-name {
+  font-family: 'Exo 2', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: .25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.podium-val {
+  font-family: 'Orbitron', monospace;
+  font-size: .95rem;
+  font-weight: 700;
+}
+.podium-slot:nth-child(1) .podium-val { color: #9ca3af; }
+.podium-slot:nth-child(2) .podium-val { color: var(--amber); }
+.podium-slot:nth-child(3) .podium-val { color: #b45309; }
+.podium-bar {
+  border-radius: 4px 4px 0 0;
+  margin-top: .6rem;
+}
+.podium-slot:nth-child(1) .podium-bar { height: 60px; background: linear-gradient(to top, #374151, #4b5563); }
+.podium-slot:nth-child(2) .podium-bar { height: 90px; background: linear-gradient(to top, #78350f, #b45309); }
+.podium-slot:nth-child(3) .podium-bar { height: 45px; background: linear-gradient(to top, #1f2937, #374151); }
+
+/* rank rows */
+.rank-list { display: flex; flex-direction: column; gap: .45rem; }
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: .85rem 1.1rem;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  animation: slideIn .3s ease both;
+  transition: border-color .2s;
+}
+.rank-row:hover { border-color: var(--bhi); }
+.rank-row.is-me { border-color: var(--cyan); background: rgba(0,200,255,.04); }
+.rank-pos {
+  font-family: 'Orbitron', monospace;
+  font-size: .82rem;
+  font-weight: 700;
+  min-width: 2rem;
+  text-align: center;
+  color: var(--dim);
+}
+.rank-pos.gold   { color: var(--amber); }
+.rank-pos.silver { color: #9ca3af; }
+.rank-pos.bronze { color: #b45309; }
+.rank-avi {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.rank-info { flex: 1; min-width: 0; }
+.rank-name {
+  font-size: .92rem;
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rank-detail {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .65rem;
+  color: var(--dim);
+  margin-top: .1rem;
+}
+.rank-score {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+.rank-score.green { color: var(--green); }
+.rank-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .6rem;
+  padding: .15rem .4rem;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.rank-badge.new-record { background: rgba(255,170,0,.12); color: var(--amber); border: 1px solid rgba(255,170,0,.3); }
+
+/* my rank highlight */
+.my-rank-card {
+  background: rgba(0,200,255,.05);
+  border: 1px solid var(--cyan);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  animation: fadeUp .4s ease;
+}
+.my-rank-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .68rem;
+  color: var(--cyan);
+  letter-spacing: .12em;
+  margin-bottom: .2rem;
+}
+.my-rank-pos {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--cyan);
+  min-width: 3rem;
+  text-align: center;
+}
+
+/* loading skeleton */
+.skel-row {
+  height: 58px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.skel-row::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent);
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { from { transform: translateX(-100%) } to { transform: translateX(100%) } }
+@keyframes slideIn { from { opacity:0; transform:translateX(-10px) } to { opacity:1; transform:none } }
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .85rem;
+  color: var(--dim);
+  letter-spacing: .1em;
+  line-height: 2;
+}
+.refresh-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .72rem;
+  color: var(--dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: .1em;
+  transition: color .2s;
+  margin-left: auto;
+  display: block;
+  padding: .3rem 0;
+}
+.refresh-btn:hover { color: var(--cyan); }
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .75rem;
+}
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .7rem;
+  color: var(--dim);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav class="navbar" id="main-nav">
+  <a href="index.html" class="nav-logo">ESCAPE://SYSTEM</a>
+  <div class="nav-right" id="nav-right"><div id="nav-auth-area"></div>
+
+  </div>
+</nav>
+
+<div class="wrap fade-in">
+  <!-- HEADER -->
+  <div class="lb-header">
+    <div class="lb-header-title">ALL TIME <span>LEADERBOARD</span></div>
+    <div class="lb-header-sub">&gt; Die besten Spieler weltweit _</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="lb-tabs">
+    <button class="lb-tab active" id="tab-sp" onclick="switchTab('sp')">🏆 SINGLEPLAYER</button>
+    <button class="lb-tab" id="tab-mp" onclick="switchTab('mp')">⚡ MULTIPLAYER WINS</button>
+  </div>
+
+  <!-- MY RANK (wenn eingeloggt) -->
+  <div id="my-rank-card" style="display:none"></div>
+
+  <!-- PODIUM -->
+  <div class="podium" id="podium"></div>
+
+  <!-- RANK LIST -->
+  <div class="section-head">
+    <span class="section-label" id="list-label">TOP 50 — SINGLEPLAYER SCORE</span>
+    <button class="refresh-btn" onclick="loadBoard()">↻ AKTUALISIEREN</button>
+  </div>
+  <div class="rank-list" id="rank-list">
+    <!-- skeleton loader -->
+    <div class="skel-row"></div>
+    <div class="skel-row" style="animation-delay:.1s"></div>
+    <div class="skel-row" style="animation-delay:.2s"></div>
+    <div class="skel-row" style="animation-delay:.3s"></div>
+    <div class="skel-row" style="animation-delay:.4s"></div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, query, orderByChild, limitToLast, get }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { FIREBASE_CONFIG } from "./firebase-config.js";
+
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+let currentTab = 'sp';
+let currentUser = null;
+
+// ── NAV AUTH STATE ──
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if (user) {
+    document.getElementById('nav-user-info').style.display = 'inline';
+    document.getElementById('nav-user-info').innerHTML =
+      `Hallo, <span>${user.displayName || user.email}</span>`;
+    document.getElementById('nav-login-btn').textContent = 'PROFIL';
+    document.getElementById('nav-login-btn').href = 'profile.html';
+  }
+  loadBoard();
+});
+
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.getElementById('tab-sp').className = 'lb-tab' + (tab==='sp' ? ' active' : '');
+  document.getElementById('tab-mp').className = 'lb-tab' + (tab==='mp' ? ' active g' : '');
+  document.getElementById('list-label').textContent =
+    tab === 'sp' ? 'TOP 50 — SINGLEPLAYER SCORE' : 'TOP 50 — MULTIPLAYER WINS';
+  loadBoard();
+};
+
+window.loadBoard = async function() {
+  const list = document.getElementById('rank-list');
+  const podiumEl = document.getElementById('podium');
+  const myCard = document.getElementById('my-rank-card');
+
+  // show skeletons
+  list.innerHTML = Array(5).fill('<div class="skel-row"></div>').join('');
+  podiumEl.innerHTML = '';
+  myCard.style.display = 'none';
+
+  const path  = currentTab === 'sp' ? 'leaderboard/sp' : 'leaderboard/mp';
+  const field = currentTab === 'sp' ? 'score' : 'wins';
+
+  try {
+    const snap = await get(query(ref(db, path), orderByChild(field), limitToLast(50)));
+    if (!snap.exists()) {
+      list.innerHTML = `<div class="empty-state">
+        🔒 Noch keine Einträge.<br>Spiele das erste Spiel und werde #1!
+      </div>`;
+      return;
+    }
+
+    // collect + sort descending
+    const entries = [];
+    snap.forEach(child => entries.push({ uid: child.key, ...child.val() }));
+    entries.sort((a,b) => (b[field]||0) - (a[field]||0));
+
+    // my rank
+    if (currentUser) {
+      const myIdx = entries.findIndex(e => e.uid === currentUser.uid);
+      if (myIdx !== -1) {
+        const me = entries[myIdx];
+        myCard.style.display = 'flex';
+        myCard.className = 'my-rank-card';
+        myCard.innerHTML = `
+          <div class="my-rank-pos">#${myIdx+1}</div>
+          <div class="rank-avi">${me.avatar || '🎮'}</div>
+          <div style="flex:1">
+            <div class="my-rank-label">DEIN RANG</div>
+            <div class="rank-name">${escHtml(me.name || 'Du')}</div>
+            <div class="rank-detail">${currentTab==='sp'
+              ? `${me.score||0} pts · ${me.gamesPlayed||0} Spiele`
+              : `${me.wins||0} Wins · ${me.gamesPlayed||0} Spiele`}</div>
+          </div>
+          <div class="rank-score${currentTab==='mp'?' green':''}">${me[field]||0}${currentTab==='sp'?' pts':' W'}</div>`;
+      }
+    }
+
+    // podium (top 3)
+    const podiumOrder = [entries[1], entries[0], entries[2]]; // silver, gold, bronze
+    const podiumIcons = ['🥈','🥇','🥉'];
+    const podiumCrowns= ['','👑',''];
+    podiumEl.innerHTML = podiumOrder.map((e,i) => e ? `
+      <div class="podium-slot">
+        <div class="podium-avatar">
+          ${podiumCrowns[i] ? `<span class="crown-icon">${podiumCrowns[i]}</span>` : ''}
+          ${e.avatar || '🎮'}
+        </div>
+        <div class="podium-name">${escHtml(e.name||'?')}</div>
+        <div class="podium-val">${(e[field]||0)}${currentTab==='sp'?' pts':' W'}</div>
+        <div class="podium-bar"></div>
+      </div>` : '<div class="podium-slot"><div class="podium-bar" style="height:40px;background:var(--bg2)"></div></div>'
+    ).join('');
+
+    // full list (top 50, starting from #4)
+    const medals = { 0:'🥇', 1:'🥈', 2:'🥉' };
+    const posClass = { 0:'gold', 1:'silver', 2:'bronze' };
+    list.innerHTML = entries.map((e, i) => {
+      const isMe = currentUser && e.uid === currentUser.uid;
+      const detail = currentTab === 'sp'
+        ? `${e.gamesPlayed||0} Spiele · Beste Zeit: ${e.bestTime ? e.bestTime+'s' : '—'}`
+        : `${e.gamesPlayed||0} Spiele · Win-Rate: ${e.gamesPlayed ? Math.round((e.wins||0)/e.gamesPlayed*100)+'%' : '—'}`;
+      return `
+        <div class="rank-row${isMe?' is-me':''}" style="animation-delay:${Math.min(i*.04,1)}s">
+          <div class="rank-pos ${posClass[i]||''}">${medals[i] || '#'+(i+1)}</div>
+          <div class="rank-avi">${e.avatar||'🎮'}</div>
+          <div class="rank-info">
+            <div class="rank-name">${escHtml(e.name||'Unbekannt')}${isMe?' <span style="color:var(--cyan);font-size:.7rem">(Du)</span>':''}</div>
+            <div class="rank-detail">${detail}</div>
+          </div>
+          <div class="rank-score${currentTab==='mp'?' green':''}">${(e[field]||0)}${currentTab==='sp'?' pts':' W'}</div>
+        </div>`;
+    }).join('');
+
+  } catch(err) {
+    list.innerHTML = `<div class="empty-state">
+      ⚠ Fehler beim Laden.<br><small style="color:var(--red)">${err.message}</small>
+    </div>`;
+  }
+};
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+<script type="module" src="navbar.js"></script>
+</body>
+</html>
