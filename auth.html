@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — ESCAPE://SYSTEM</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.auth-wrap  { width: 100%; max-width: 420px; position: relative; z-index: 1; }
+.auth-logo  { text-align: center; margin-bottom: 2rem; }
+.auth-logo-text { font-family:'Orbitron',monospace; font-size:1.6rem; font-weight:900; color:#fff; letter-spacing:.08em; }
+.auth-logo-text span { color: var(--cyan); }
+.auth-logo-sub { font-family:'Share Tech Mono',monospace; font-size:.72rem; color:var(--dim); letter-spacing:.18em; margin-top:.3rem; }
+
+.tab-switch { display:flex; background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:.3rem; margin-bottom:1.5rem; }
+.tab-btn { flex:1; font-family:'Orbitron',monospace; font-size:.72rem; font-weight:700; letter-spacing:.08em; padding:.6rem; background:transparent; border:none; color:var(--dim); cursor:pointer; border-radius:4px; transition:all .2s; }
+.tab-btn.active { background:rgba(0,200,255,.12); color:var(--cyan); }
+
+.avatar-picker { margin-bottom:1.2rem; }
+.avatar-label { font-family:'Share Tech Mono',monospace; font-size:.7rem; color:var(--dim); letter-spacing:.12em; display:block; margin-bottom:.6rem; }
+.avatar-grid { display:flex; gap:.5rem; flex-wrap:wrap; }
+.avi-opt { width:44px; height:44px; border-radius:50%; background:var(--bg2); border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.3rem; cursor:pointer; transition:all .2s; }
+.avi-opt:hover { border-color:var(--bhi); transform:scale(1.1); }
+.avi-opt.selected { border-color:var(--cyan); box-shadow:0 0 12px rgba(0,200,255,.3); transform:scale(1.1); background:rgba(0,200,255,.08); }
+
+.strength-bar { height:3px; background:var(--border); border-radius:2px; margin-top:.4rem; overflow:hidden; }
+.strength-fill { height:100%; border-radius:2px; transition:width .3s, background .3s; }
+
+.success-box { background:rgba(0,255,157,.08); border:1px solid rgba(0,255,157,.3); border-radius:4px; padding:1.2rem; text-align:center; font-family:'Share Tech Mono',monospace; font-size:.82rem; color:var(--green); line-height:1.6; display:none; }
+.success-box.show { display:block; animation:fadeUp .4s ease; }
+
+.or-divider { display:flex; align-items:center; gap:.8rem; margin:1rem 0; color:var(--dim); font-family:'Share Tech Mono',monospace; font-size:.7rem; }
+.or-divider::before,.or-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.oauth-row { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1rem; }
+.oauth-btn { display:flex; align-items:center; justify-content:center; gap:.75rem; width:100%; padding:.85rem; background:var(--bg2); border:1.5px solid var(--border); color:var(--text); font-family:'Exo 2',sans-serif; font-size:.9rem; font-weight:600; cursor:pointer; border-radius:4px; transition:all .2s; }
+.oauth-btn:hover { border-color:var(--bhi); background:var(--bg3); transform:translateY(-1px); }
+.oauth-btn .oi { font-size:1.1rem; }
+
+.forgot-link { font-family:'Share Tech Mono',monospace; font-size:.72rem; color:var(--dim); background:none; border:none; cursor:pointer; letter-spacing:.06em; transition:color .2s; text-align:right; display:block; width:100%; margin-top:.3rem; }
+.forgot-link:hover { color:var(--cyan); }
+.switch-link { text-align:center; margin-top:1.2rem; font-family:'Share Tech Mono',monospace; font-size:.75rem; color:var(--dim); }
+.switch-link button { color:var(--cyan); background:none; border:none; cursor:pointer; font-family:inherit; font-size:inherit; text-decoration:underline; }
+.switch-link button:hover { color:#fff; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="auth-page">
+  <div class="auth-wrap fade-in">
+    <!-- LOGO -->
+    <div class="auth-logo">
+      <a href="index.html" style="text-decoration:none">
+        <div class="auth-logo-text">ESCAPE<span>://</span>SYSTEM</div>
+        <div class="auth-logo-sub">KONTO ERSTELLEN / ANMELDEN</div>
+      </a>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-switch">
+      <button class="tab-btn active" id="tab-login" onclick="showTab('login')">ANMELDEN</button>
+      <button class="tab-btn"        id="tab-reg"   onclick="showTab('reg')">REGISTRIEREN</button>
+    </div>
+
+    <!-- AUTH BOX -->
+    <div class="auth-box" id="auth-box">
+
+      <!-- ERROR / SUCCESS -->
+      <div class="form-err" id="auth-err"></div>
+      <div class="success-box" id="auth-success"></div>
+
+      <!-- OAUTH -->
+      <div class="oauth-row">
+        <button class="oauth-btn" id="btn-google">
+          <span class="oi">🔵</span> Mit Google anmelden
+        </button>
+        <button class="oauth-btn" id="btn-apple" style="display:none">
+          <span class="oi">🍎</span> Mit Apple anmelden
+        </button>
+      </div>
+      <div class="or-divider">oder mit E-Mail</div>
+
+      <!-- REGISTER FIELDS (hidden in login) -->
+      <div id="reg-fields" style="display:none">
+        <!-- USERNAME -->
+        <div class="form-group">
+          <label class="form-label">BENUTZERNAME</label>
+          <input class="form-input" id="inp-name" placeholder="z.B. HackerMax" maxlength="20">
+        </div>
+        <!-- AVATAR PICKER -->
+        <div class="form-group avatar-picker">
+          <label class="avatar-label">WÄHLE DEINEN AVATAR</label>
+          <div class="avatar-grid" id="avatar-grid"></div>
+        </div>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="form-group">
+        <label class="form-label">E-MAIL</label>
+        <input class="form-input" id="inp-email" type="email" placeholder="deine@email.com">
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="form-group">
+        <label class="form-label">PASSWORT</label>
+        <input class="form-input" id="inp-pass" type="password" placeholder="••••••••" oninput="checkStrength(this.value)">
+        <div class="strength-bar" id="str-bar" style="display:none">
+          <div class="strength-fill" id="str-fill"></div>
+        </div>
+      </div>
+      <button class="forgot-link" id="forgot-btn" onclick="sendReset()">Passwort vergessen?</button>
+
+      <!-- SUBMIT -->
+      <button class="btn g full" id="submit-btn" style="margin-top:1rem">ANMELDEN</button>
+
+      <div class="switch-link" id="switch-link">
+        Noch kein Konto? <button onclick="showTab('reg')">Jetzt registrieren</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  updateProfile, sendPasswordResetEmail,
+  GoogleAuthProvider, signInWithPopup
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { FIREBASE_CONFIG } from "./firebase-config.js";
+
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+// Redirect if already logged in
+onAuthStateChanged(auth, user => {
+  if (user) {
+    const redir = new URLSearchParams(location.search).get('redirect') || 'index.html';
+    location.href = redir;
+  }
+});
+
+// ── AVATARS ──
+const AVATARS = ['🚀','🎮','🤖','👾','🦾','🐱','🦊','🐉','💀','⚡','🔥','🌟','🎯','💎','🧠','🎲'];
+let selectedAvatar = AVATARS[0];
+const grid = document.getElementById('avatar-grid');
+AVATARS.forEach(avi => {
+  const d = document.createElement('div');
+  d.className = 'avi-opt' + (avi === selectedAvatar ? ' selected' : '');
+  d.textContent = avi;
+  d.addEventListener('click', () => {
+    document.querySelectorAll('.avi-opt').forEach(x => x.classList.remove('selected'));
+    d.classList.add('selected');
+    selectedAvatar = avi;
+  });
+  grid.appendChild(d);
+});
+
+// ── TABS ──
+let currentTab = 'login';
+window.showTab = function(tab) {
+  currentTab = tab;
+  document.getElementById('tab-login').className = 'tab-btn' + (tab==='login'?' active':'');
+  document.getElementById('tab-reg').className   = 'tab-btn' + (tab==='reg'  ?' active':'');
+  document.getElementById('reg-fields').style.display   = tab==='reg' ? 'block' : 'none';
+  document.getElementById('str-bar').style.display      = tab==='reg' ? 'block' : 'none';
+  document.getElementById('forgot-btn').style.display   = tab==='login'? 'block' : 'none';
+  document.getElementById('submit-btn').textContent     = tab==='login' ? 'ANMELDEN' : 'KONTO ERSTELLEN';
+  document.getElementById('switch-link').innerHTML = tab==='login'
+    ? 'Noch kein Konto? <button onclick="showTab(\'reg\')">Jetzt registrieren</button>'
+    : 'Schon ein Konto? <button onclick="showTab(\'login\')">Anmelden</button>';
+  clearMessages();
+};
+
+function showErr(msg) {
+  const e = document.getElementById('auth-err');
+  e.textContent = msg; e.className = 'form-err show';
+  document.getElementById('auth-success').className = 'success-box';
+}
+function showSuccess(msg) {
+  const s = document.getElementById('auth-success');
+  s.textContent = msg; s.className = 'success-box show';
+  document.getElementById('auth-err').className = 'form-err';
+}
+function clearMessages() {
+  document.getElementById('auth-err').className = 'form-err';
+  document.getElementById('auth-success').className = 'success-box';
+}
+
+// ── PASSWORD STRENGTH ──
+window.checkStrength = function(pw) {
+  const fill = document.getElementById('str-fill');
+  let score = 0;
+  if (pw.length >= 6)  score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const pct = (score / 5) * 100;
+  const color = score <= 1 ? '#ff4466' : score <= 3 ? '#ffaa00' : '#00ff9d';
+  fill.style.width = pct + '%';
+  fill.style.background = color;
+};
+
+// ── GOOGLE OAUTH ──
+document.getElementById('btn-google').addEventListener('click', async () => {
+  clearMessages();
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    await ensureUserProfile(result.user);
+  } catch(e) {
+    showErr(firebaseErrMsg(e.code));
+  }
+});
+
+// ── SUBMIT ──
+document.getElementById('submit-btn').addEventListener('click', async () => {
+  clearMessages();
+  const email = document.getElementById('inp-email').value.trim();
+  const pass  = document.getElementById('inp-pass').value;
+  const btn   = document.getElementById('submit-btn');
+
+  if (!email) { showErr('Bitte E-Mail eingeben.'); return; }
+  if (!pass)  { showErr('Bitte Passwort eingeben.'); return; }
+
+  btn.setAttribute('disabled', '');
+  btn.textContent = 'BITTE WARTEN...';
+
+  try {
+    if (currentTab === 'login') {
+      await signInWithEmailAndPassword(auth, email, pass);
+      // redirect handled by onAuthStateChanged
+    } else {
+      const name = document.getElementById('inp-name').value.trim();
+      if (!name) { showErr('Bitte einen Benutzernamen eingeben.'); btn.removeAttribute('disabled'); btn.textContent='KONTO ERSTELLEN'; return; }
+      if (name.length < 3) { showErr('Name muss mindestens 3 Zeichen haben.'); btn.removeAttribute('disabled'); btn.textContent='KONTO ERSTELLEN'; return; }
+      if (pass.length < 6) { showErr('Passwort muss mindestens 6 Zeichen haben.'); btn.removeAttribute('disabled'); btn.textContent='KONTO ERSTELLEN'; return; }
+
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(cred.user, { displayName: name });
+      await saveUserProfile(cred.user.uid, name, email, selectedAvatar);
+      showSuccess('✅ Konto erstellt! Du wirst weitergeleitet...');
+    }
+  } catch(e) {
+    showErr(firebaseErrMsg(e.code));
+    btn.removeAttribute('disabled');
+    btn.textContent = currentTab === 'login' ? 'ANMELDEN' : 'KONTO ERSTELLEN';
+  }
+});
+
+// ── FORGOT PASSWORD ──
+window.sendReset = async function() {
+  const email = document.getElementById('inp-email').value.trim();
+  if (!email) { showErr('Bitte zuerst E-Mail eingeben.'); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showSuccess('📧 Reset-Link wurde gesendet! Schau in dein Postfach.');
+  } catch(e) {
+    showErr(firebaseErrMsg(e.code));
+  }
+};
+
+// ── USER PROFILE IN DB ──
+async function ensureUserProfile(user) {
+  const snap = await get(ref(db, 'users/' + user.uid));
+  if (!snap.exists()) {
+    const name = user.displayName || user.email.split('@')[0];
+    await saveUserProfile(user.uid, name, user.email, '🎮');
+  }
+}
+
+async function saveUserProfile(uid, name, email, avatar) {
+  await set(ref(db, 'users/' + uid), {
+    name, email, avatar,
+    createdAt: Date.now()
+  });
+  // init leaderboard entries
+  await set(ref(db, 'leaderboard/sp/' + uid), {
+    name, avatar, score: 0, gamesPlayed: 0, bestTime: null, uid
+  });
+  await set(ref(db, 'leaderboard/mp/' + uid), {
+    name, avatar, wins: 0, gamesPlayed: 0, uid
+  });
+}
+
+// ── ERROR MESSAGES (DE) ──
+function firebaseErrMsg(code) {
+  const map = {
+    'auth/email-already-in-use':    '📧 Diese E-Mail wird bereits verwendet.',
+    'auth/invalid-email':           '📧 Ungültige E-Mail-Adresse.',
+    'auth/weak-password':           '🔒 Passwort ist zu schwach (mind. 6 Zeichen).',
+    'auth/user-not-found':          '❌ Kein Konto mit dieser E-Mail gefunden.',
+    'auth/wrong-password':          '🔒 Falsches Passwort.',
+    'auth/invalid-credential':      '❌ E-Mail oder Passwort falsch.',
+    'auth/too-many-requests':       '⏳ Zu viele Versuche. Bitte warte kurz.',
+    'auth/network-request-failed':  '🌐 Netzwerkfehler. Überprüfe deine Verbindung.',
+    'auth/popup-closed-by-user':    '🔙 Anmeldung abgebrochen.',
+  };
+  return map[code] || '⚠ Fehler: ' + code;
+}
+</script>
+</body>
+</html>

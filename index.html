@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESCAPE://SYSTEM</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">ESCAPE://SYSTEM</a>
+  <div class="nav-right">
+    <span class="nav-user" id="nav-user" style="display:none"></span>
+    <a href="leaderboard.html" class="btn sm" style="border-color:var(--amber);color:var(--amber)">🏆</a>
+    <a href="auth.html" class="btn sm" id="nav-auth-btn">LOGIN</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo-eyebrow">Informatik · 7. Schulstufe · Escape Room</div>
+    <div class="hero-title">ESCAPE<span class="slash">://</span><br>SYSTEM</div>
+    <div class="hero-tag">&gt; Kannst du das System hacken? _</div>
+    <div class="cards-row">
+      <a href="singleplayer.html" class="card">
+        <span class="card-icon">🔒</span>
+        <div class="card-title">SINGLEPLAYER</div>
+        <div class="card-desc">Löse 10 Rätsel alleine. 3 Leben. Schlage die Uhr.</div>
+        <span class="badge b">10 FRAGEN · 3 RÄUME</span>
+      </a>
+      <a href="multiplayer.html" class="card green">
+        <span class="card-icon">⚡</span>
+        <div class="card-title">MULTIPLAYER</div>
+        <div class="card-desc">Kahoot-Style! Code teilen, mit Freunden spielen.</div>
+        <span class="badge g">BIS 8 SPIELER · 5 MIN</span>
+      </a>
+      <a href="leaderboard.html" class="card purple">
+        <span class="card-icon">🏆</span>
+        <div class="card-title">LEADERBOARD</div>
+        <div class="card-desc">All-Time Bestenliste — SP Score & MP Wins.</div>
+        <span class="badge p">ALL TIME</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { FIREBASE_CONFIG } from "./firebase-config.js";
+
+const auth = getAuth(initializeApp(FIREBASE_CONFIG));
+onAuthStateChanged(auth, user => {
+  const btn  = document.getElementById('nav-auth-btn');
+  const info = document.getElementById('nav-user');
+  if (user) {
+    info.style.display = 'inline';
+    info.innerHTML = `Hallo, <span>${user.displayName || user.email}</span>`;
+    btn.textContent = 'LOGOUT';
+    btn.href = '#';
+    btn.onclick = e => { e.preventDefault(); signOut(auth); };
+  } else {
+    info.style.display = 'none';
+    btn.textContent = 'LOGIN';
+    btn.href = 'auth.html';
+    btn.onclick = null;
+  }
+});
+</script>
+</body>
+</html>
