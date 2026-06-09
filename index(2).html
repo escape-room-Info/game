@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESCAPE://SYSTEM</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">ESCAPE://SYSTEM</a>
+  <div class="nav-right">
+    <a href="stats.html"       class="btn sm" style="border-color:var(--purple);color:var(--purple)">📊</a>
+    <a href="leaderboard.html" class="btn sm" style="border-color:var(--amber);color:var(--amber)">🏆</a>
+    <div id="nav-auth-area"><a href="auth.html" class="btn sm">LOGIN</a></div>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="logo-eyebrow">Informatik · 7. Schulstufe · Escape Room</div>
+    <div class="hero-title">ESCAPE<span class="slash">://</span><br>SYSTEM</div>
+    <div class="hero-tag">&gt; Kannst du das System hacken? _</div>
+
+    <!-- ROW 1: Spielmodi -->
+    <div class="cards-row" style="margin-bottom:1.2rem">
+      <a href="singleplayer.html" class="card">
+        <span class="card-icon">🔒</span>
+        <div class="card-title">SINGLEPLAYER</div>
+        <div class="card-desc">Löse 10 Rätsel alleine. 3 Leben. Schlage die Uhr.</div>
+        <span class="badge b">10 FRAGEN · 3 RÄUME</span>
+      </a>
+      <a href="singleplayer.html?pack=B" class="card" style="border-color:rgba(168,85,247,.4)">
+        <span class="card-icon">🛡️</span>
+        <div class="card-title">CYBERSECURITY</div>
+        <div class="card-desc">Hacking, Verschlüsselung & digitale Sicherheit meistern.</div>
+        <span class="badge p">NEU · 15 FRAGEN · 3 RÄUME</span>
+      </a>
+      <a href="multiplayer.html" class="card green">
+        <span class="card-icon">⚡</span>
+        <div class="card-title">MULTIPLAYER</div>
+        <div class="card-desc">Kahoot-Style! Code teilen, mit Freunden spielen.</div>
+        <span class="badge g">BIS 8 SPIELER · 5 MIN</span>
+      </a>
+    </div>
+
+    <!-- ROW 2: Extras -->
+    <div class="cards-row">
+      <a href="leaderboard.html" class="card purple" style="padding:1.3rem 1.5rem">
+        <span class="card-icon" style="font-size:1.7rem;margin-bottom:.6rem">🏆</span>
+        <div class="card-title" style="font-size:.9rem">LEADERBOARD</div>
+        <div class="card-desc" style="font-size:.76rem;margin-bottom:.5rem">All-Time Bestenliste</div>
+        <span class="badge p">ALL TIME</span>
+      </a>
+      <a href="stats.html" class="card" style="border-color:rgba(168,85,247,.35);padding:1.3rem 1.5rem">
+        <span class="card-icon" style="font-size:1.7rem;margin-bottom:.6rem">📊</span>
+        <div class="card-title" style="font-size:.9rem;color:var(--purple)">STATISTIKEN</div>
+        <div class="card-desc" style="font-size:.76rem;margin-bottom:.5rem">Deine Spielhistorie & Analyse</div>
+        <span class="badge p">PERSÖNLICH</span>
+      </a>
+    </div>
+  </div>
+</div>
+<script type="module" src="navbar.js"></script>
+</body>
+</html>
