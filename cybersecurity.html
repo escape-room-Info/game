@@ -96,19 +96,22 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function startGame() {
-  const packQs = getPackQuestions(activePack);
-  const byRoom = {};
-  packQs.forEach(q => { if (!byRoom[q.room]) byRoom[q.room] = []; byRoom[q.room].push(q); });
-  const roomKeys = Object.keys(byRoom).sort();
+  // REPARATUR: Wir ignorieren getPackQuestions() komplett!
+  // Wir greifen direkt auf ALL_Q zu und holen die Räume 3, 4 und 5.
+  const cybersecurityQs = ALL_Q.filter(q => q.room === 3 || q.room === 4 || q.room === 5);
   
-  let combined = [];
-  roomKeys.slice(0,3).forEach(r => combined.push(...shuffle(byRoom[r]).slice(0,5)));
+  // Alle Cybersecurity-Fragen durchmischen
+  const shuffledQs = shuffle(cybersecurityQs);
+  
+  // Exakt die ersten 10 Fragen herausschneiden
+  const combined = shuffledQs.slice(0, 10);
 
+  // Spielstatus mit den 10 Fragen füllen
   sp = {
     qs: combined,
     qi: 0, score: 0, lives: 3, errors: 0,
     t0: Date.now(), tval: 60, tint: null, curRoom: -1,
-    totalQ: combined.length,
+    totalQ: combined.length, // Das ist jetzt fest auf 10 eingestellt
     pack: activePack,
   };
 
