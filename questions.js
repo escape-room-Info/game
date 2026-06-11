@@ -92,7 +92,7 @@ const ALL_Q = [
   // ════════════════════════════════════
 
   // RAUM 3 — Crypto Catacombs
-  { room:3, pack:"A", q:"Was ist Verschlüsselung (Encryption)?",
+  { room:3, pack:"B", q:"Was ist Verschlüsselung (Encryption)?",
     o:["Dateien löschen","Daten in eine unleserliche Form umwandeln","Passwörter erraten","Internet abschalten"],
     c:1, e:"Verschlüsselung wandelt Daten so um, dass nur Berechtigte sie lesen können." },
 
@@ -100,28 +100,28 @@ const ALL_Q = [
     o:["Die Seite lädt schneller","Die Verbindung ist verschlüsselt und sicher","Die Seite ist kostenlos","Der Server ist in Deutschland"],
     c:1, e:"HTTPS = HTTP Secure — die Verbindung wird mit TLS/SSL verschlüsselt. Immer auf das 🔒 achten!" },
 
-  { room:3, pack:"C", q:"Welches dieser Passwörter ist am sichersten?",
+  { room:3, pack:"B", q:"Welches dieser Passwörter ist am sichersten?",
     o:["password123","Max2010","xK!9#mLq@2vZ","12345678"],
     c:2, e:"Lange Passwörter mit Zahlen, Sonderzeichen und Groß-/Kleinbuchstaben sind am sichersten." },
 
-  { room:3, pack:"D", q:"Was ist ein 'Hash'?",
+  { room:3, pack:"B", q:"Was ist ein 'Hash'?",
     o:["Ein Hacker-Werkzeug","Eine Einweg-Fingerabdruck-Funktion für Daten","Ein Netzwerkprotokoll","Eine Art Virus"],
     c:1, e:"Ein Hash (z.B. SHA-256) wandelt beliebige Daten in einen fixen Fingerabdruck um — nicht rückgängig machbar." },
 
-  { room:3, pack:"D", q:"Was ist Zwei-Faktor-Authentifizierung (2FA)?",
+  { room:3, pack:"B", q:"Was ist Zwei-Faktor-Authentifizierung (2FA)?",
     o:["Zwei Passwörter eingeben","Login mit Passwort + zweitem Beweis (z.B. SMS-Code)","Doppelte Verschlüsselung","Zwei Benutzerkonten"],
     c:1, e:"2FA = etwas das du weißt (Passwort) + etwas das du hast (SMS, App). Viel sicherer!" },
 
-  { room:3, pack:"A", q:"Was speichert ein Passwort-Manager?",
+  { room:3, pack:"B", q:"Was speichert ein Passwort-Manager?",
     o:["Deine Kreditkartennummern","Alle deine Passwörter verschlüsselt an einem Ort","Deinen Browserverlauf","Deine E-Mails"],
     c:1, e:"Passwort-Manager (z.B. Bitwarden) speichern alle Passwörter sicher — du brauchst nur ein Masterpasswort." },
 
   // RAUM 4 — Hack Hub
-  { room:4, pack:"A", q:"Was ist 'Phishing'?",
+  { room:4, pack:"B", q:"Was ist 'Phishing'?",
     o:["Einen Fisch fangen","Gefälschte E-Mails/Seiten um Daten zu stehlen","Netzwerk-Geschwindigkeit messen","Viren entfernen"],
     c:1, e:"Phishing täuscht echte Seiten/Mails nach — Ziel ist es, Passwörter oder Kreditkartendaten zu stehlen." },
 
-  { room:4, pack:"C", q:"Was ist 'Social Engineering'?",
+  { room:4, pack:"B", q:"Was ist 'Social Engineering'?",
     o:["Soziale Netzwerke programmieren","Menschen manipulieren um an Informationen zu kommen","Netzwerke aufbauen","Eine Programmiersprache"],
     c:1, e:"Social Engineering nutzt menschliche Schwächen statt technischer — z.B. als IT-Support ausgeben." },
 
@@ -129,28 +129,28 @@ const ALL_Q = [
     o:["Ein sehr schneller Computer","Eine Schadsoftware die sich als nützliches Programm tarnt","Ein Firewall-Typ","Ein Verschlüsselungsverfahren"],
     c:1, e:"Trojaner sehen wie echte Programme aus, führen aber heimlich Schadcode aus — wie das antike Pferd." },
 
-  { room:4, pack:"D", q:"Was ist 'Ransomware'?",
+  { room:4, pack:"B", q:"Was ist 'Ransomware'?",
     o:["Software zum Sichern von Daten","Schadsoftware die Dateien verschlüsselt und Lösegeld fordert","Ein Antivirusprogramm","Ein Backup-Tool"],
     c:1, e:"Ransomware (Erpressungssoftware) verschlüsselt deine Dateien und fordert Zahlung — oft in Kryptowährung." },
 
-  { room:4, pack:"A", q:"Was bedeutet 'Brute-Force-Angriff'?",
+  { room:4, pack:"B", q:"Was bedeutet 'Brute-Force-Angriff'?",
     o:["Physischer Einbruch in ein Rechenzentrum","Systematisches Ausprobieren aller möglichen Passwörter","Netzwerküberlastung","E-Mail-Spam"],
     c:1, e:"Bei Brute-Force probiert ein Computer automatisch alle Kombinationen — ein kurzes Passwort kann in Sekunden geknackt werden!" },
 
-  { room:4, pack:"C", q:"Was ist ein 'Man-in-the-Middle'-Angriff?",
+  { room:4, pack:"B", q:"Was ist ein 'Man-in-the-Middle'-Angriff?",
     o:["Ein Angriff auf das Rechenzentrum","Jemand liest heimlich die Kommunikation zwischen zwei Parteien mit","Ein Virus im RAM","Zu viele Loginversuche"],
     c:1, e:"Bei MitM schaltet sich ein Angreifer zwischen zwei Kommunikationspartner — deshalb ist HTTPS so wichtig!" },
 
   // RAUM 5 — Defense Domain
-  { room:5, pack:"A", q:"Was macht eine Firewall?",
+  { room:5, pack:"B", q:"Was macht eine Firewall?",
     o:["Feuer löschen","Unerwünschten Netzwerkverkehr blockieren","Dateien komprimieren","Viren entfernen"],
     c:1, e:"Eine Firewall überwacht und filtert Netzwerkverkehr — sie ist die erste Schutzlinie deines Systems." },
 
-  { room:5, pack:"C", q:"Was ist ein 'Software-Update' aus Sicherheitssicht?",
+  { room:5, pack:"B", q:"Was ist ein 'Software-Update' aus Sicherheitssicht?",
     o:["Nur neue Features hinzufügen","Auch Sicherheitslücken schließen (Patches)","Das Programm langsamer machen","Daten löschen"],
     c:1, e:"Updates schließen bekannte Sicherheitslücken (Vulnerabilities) — veraltete Software ist ein Hauptangriffsziel." },
 
-  { room:5, pack:"A", q:"Was bedeutet 'Datensparsamkeit'?",
+  { room:5, pack:"B", q:"Was bedeutet 'Datensparsamkeit'?",
     o:["Festplatte aufräumen","Nur die wirklich notwendigen Daten sammeln und speichern","Internet-Speed drosseln","Passwörter kürzer machen"],
     c:1, e:"Datensparsamkeit = Privacy by Design: je weniger Daten gesammelt werden, desto weniger kann gestohlen werden." },
 
@@ -158,7 +158,7 @@ const ALL_Q = [
     o:["Ein Virus-Programm","Sehr schnelles Netzwerk","Verschlüsselter Tunnel für Internetverbindungen","Ein Browser"],
     c:2, e:"VPN = Virtual Private Network — dein Datenverkehr läuft verschlüsselt durch einen Tunnel, ideal für öffentliches WLAN." },
 
-  { room:5, pack:"D", q:"Was sollte man bei verdächtigen E-Mail-Anhängen tun?",
+  { room:5, pack:"B", q:"Was sollte man bei verdächtigen E-Mail-Anhängen tun?",
     o:["Sofort öffnen um zu sehen was drin ist","Nicht öffnen, Absender prüfen, ggf. IT-Support kontaktieren","An Freunde weiterleiten","Ausdrucken"],
     c:1, e:"Verdächtige Anhänge NIEMALS öffnen — die meisten Malware-Infektionen starten per E-Mail-Anhang." },
 ];
